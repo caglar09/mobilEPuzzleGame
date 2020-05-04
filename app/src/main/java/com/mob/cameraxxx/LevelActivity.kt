@@ -14,8 +14,10 @@ import android.widget.GridView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.mob.cameraxxx.data.Image
 import kotlinx.android.synthetic.main.activity_single_image.view.*
 import java.io.File
+
 private const val REQUEST_CODE_PERMISSIONS = 10
 // This is an array of all the permission specified in the manifest.
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE)
