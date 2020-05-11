@@ -15,10 +15,12 @@ class ImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_image)
+
         imgView=findViewById(R.id.imageview) as ImageView
 
         val intent = getIntent();
-        val url=intent.getStringExtra("img") as String
+        val url=intent.getStringExtra("imgSource") as String
+
 
         val imgFile = File(url)
         if (imgFile.exists()){

@@ -261,7 +261,6 @@ class BitmapRecyclerAdapters : RecyclerView.Adapter<BitmapRecyclerAdapters.ViewH
     private var count: Int = 0
 
     constructor(ctx: Context, bMaps: ArrayList<BitmapModel>, _row: Int, _count: Int) {
-
         _bMpas = bMaps
         _context = ctx
         row = _row
@@ -274,20 +273,9 @@ class BitmapRecyclerAdapters : RecyclerView.Adapter<BitmapRecyclerAdapters.ViewH
         val view = LayoutInflater.from(parent?.context).inflate(R.layout.bitmap_partial, parent, false)
         view.tag = viewType.toString()
         var v = ViewHolder(view)
-
-        /* view.setOnTouchListener { v: View, event: MotionEvent ->
-            if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-                startDragging(c)
-            }
-            return@setOnTouchListener true
-        }*/
         return v
     }
 
-    /*    fun startDragging(viewHolder: RecyclerView.ViewHolder) {
-
-       // itemTouchHelper.startDrag(viewHolder)
-    }*/
     override fun getItemCount(): Int {
         return _bMpas.size
     }

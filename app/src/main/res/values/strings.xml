@@ -2,4 +2,6 @@
     <string name="app_name">MobileGame</string>
     <string name="game_Start_Title">Oyun Oyna</string>
     <string name="new_level_add">Yeni Bölüm Ekle</string>
+    <string name="action_showCamera">Kamera Aç</string>
+    <string name="image_Tag">ImageTag</string>
 </resources>

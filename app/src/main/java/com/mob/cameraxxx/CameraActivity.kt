@@ -1,93 +1,97 @@
 package com.mob.cameraxxx
 
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.util.Size
+import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
-import android.view.OrientationEventListener
+import android.util.Rational
+import android.util.Size
 import android.view.Surface
 import android.view.TextureView
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.core.ImageCapture.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.LifecycleOwner
 import java.io.File
 import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-// This is an arbitrary number we are using to keep track of the permission
-// request. Where an app has multiple context for requesting permission,
-// this can help differentiate the different contexts.
 private const val REQUEST_CODE_PERMISSIONS = 10
-// This is an array of all the permission specified in the manifest.
 private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
 class MainActivity : AppCompatActivity(),LifecycleOwner {
     // Add this after onCreate
-
+    private var lensFacing = CameraX.LensFacing.BACK
     private val executor = Executors.newSingleThreadExecutor()
     private lateinit var viewFinder: TextureView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-
-
-        // Add this at the end of onCreate function
-
+        setContentView(R.layout.activity_camera)
         viewFinder = findViewById(R.id.view_finder)
 
         // Request camera permissions
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
 
+            setSupportActionBar(findViewById(R.id.activity_camera_toolbar))
+            supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+            supportActionBar!!.setDisplayShowTitleEnabled(false)
+
         } else {
             ActivityCompat.requestPermissions(
                 this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
-        // Every time the provided texture view changes, recompute layout
-        viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+      viewFinder.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             updateTransform()
-        }/**/
+        }
     }
-
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
     fun redirectIntent(filePath: String?){
         Log.d("CameraXApp", filePath)
         val intent= Intent(this,ImageActivity::class.java)
-        intent.putExtra("img",filePath)
+        intent.putExtra("imgSource",filePath)
+        intent.putExtra("bool",true)
         startActivity(intent)
     }
 
     @SuppressLint("RestrictedApi")
     private fun startCamera() {
-        // Create configuration object for the viewfinder use case
+        val metrics = DisplayMetrics().also { viewFinder.display.getRealMetrics(it) }
+        val screenSize = Size(metrics.widthPixels, metrics.heightPixels)
+        val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
+
         val previewConfig = PreviewConfig.Builder().apply {
-            setTargetResolution(Size(640, 480))
+            setLensFacing(lensFacing)
+            setTargetResolution(screenSize)
+            setTargetRotation(windowManager.defaultDisplay.rotation)
         }.build()
 
+       /* val previewConfig = PreviewConfig.Builder().apply {
+            setTargetResolution(screen)
+        }.build()*/
 
-        // Build the viewfinder use case
         val preview = Preview(previewConfig)
 
-        // Every time the viewfinder is updated, recompute layout
         preview.setOnPreviewOutputUpdateListener {
 
-            // To update the SurfaceTexture, we have to remove it and re-add it
             val parent = viewFinder.parent as ViewGroup
             parent.removeView(viewFinder)
             parent.addView(viewFinder, 0)
@@ -95,16 +99,11 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
             viewFinder.surfaceTexture = it.surfaceTexture
             updateTransform()
         }
-
-
-
-        // Create configuration object for the image capture use case
         val imageCaptureConfig = ImageCaptureConfig.Builder()
             .apply {
-                // We don't set a resolution for image capture; instead, we
-                // select a capture mode which will infer the appropriate
-                // resolution based on aspect ration and requested mode
-                setCaptureMode(CaptureMode.MIN_LATENCY)
+                setCaptureMode(CaptureMode.MAX_QUALITY)
+                setTargetResolution(screenSize)
+                setTargetRotation(windowManager.defaultDisplay.rotation)
             }.build()
 
         val imageCapture = ImageCapture(imageCaptureConfig)
@@ -114,13 +113,10 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
         findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
             val file = File(externalMediaDirs.first(),
                 "${System.currentTimeMillis()}.jpg")
+
             imageCapture.takePicture(file, executor,
                 object : OnImageSavedListener {
-                    override fun onError(
-                        imageCaptureError: ImageCaptureError,
-                        message: String,
-                        exc: Throwable?
-                    ) {
+                    override fun onError(imageCaptureError: ImageCaptureError, message: String, exc: Throwable?) {
                         val msg = "Photo capture failed: $message"
                         Log.e("CameraXApp", msg, exc)
                         viewFinder.post {
@@ -140,18 +136,11 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
                 })
         }
 
-
-        // Add this before CameraX.bindToLifecycle
-
-        // Setup image analysis pipeline that computes average pixel luminance
         val analyzerConfig = ImageAnalysisConfig.Builder().apply {
-            // In our analysis, we care more about the latest image than
-            // analyzing *every* image
             setImageReaderMode(
                 ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         }.build()
 
-        // Build the image analysis use case and instantiate our analyzer
         val analyzerUseCase = ImageAnalysis(analyzerConfig).apply {
             setAnalyzer(executor, LuminosityAnalyzer())
         }
@@ -163,11 +152,9 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
     private fun updateTransform() {
         val matrix = Matrix()
 
-        // Compute the center of the view finder
         val centerX = viewFinder.width / 2f
         val centerY = viewFinder.height / 2f
 
-        // Correct preview output to account for display rotation
         val rotationDegrees = when(viewFinder.display.rotation) {
             Surface.ROTATION_0 -> 0
             Surface.ROTATION_90 -> 90
@@ -176,15 +163,40 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
             else -> return
         }
         matrix.postRotate(-rotationDegrees.toFloat(), centerX, centerY)
-
-        // Finally, apply transformations to our TextureView
         viewFinder.setTransform(matrix)
     }
 
-    /**
-     * Process result from permission request dialog box, has the request
-     * been granted? If yes, start Camera. Otherwise display a toast
-     */
+    fun rotateBitmap(bitmap: Bitmap, orientation: Int): Bitmap? {
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_NORMAL -> return bitmap
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.setScale(-1f, 1f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(180f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> {
+                matrix.setRotate(180f)
+                matrix.postScale(-1f, 1f)
+            }
+            ExifInterface.ORIENTATION_TRANSPOSE -> {
+                matrix.setRotate(90f)
+                matrix.postScale(-1f, 1f)
+            }
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.setRotate(90f)
+            ExifInterface.ORIENTATION_TRANSVERSE -> {
+                matrix.setRotate(-90f)
+                matrix.postScale(-1f, 1f)
+            }
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.setRotate(-90f)
+            else -> return bitmap
+        }
+        return try {
+            val bmRotated: Bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true)
+            bitmap.recycle()
+            bmRotated
+        } catch (e: OutOfMemoryError) {
+            e.printStackTrace()
+            null
+        }
+    }
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
@@ -199,9 +211,6 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
         }
     }
 
-    /**
-     * Check if all permission specified in the manifest have been granted
-     */
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
             baseContext, it) == PackageManager.PERMISSION_GRANTED

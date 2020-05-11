@@ -16,7 +16,7 @@ class HomeActivity : AppCompatActivity() {
         btnNewLevel = findViewById<Button>(R.id.btn_newLevel)
 
         btnGameStart!!.setOnClickListener { v ->
-            var intent = Intent(this@HomeActivity, Bitmap_Generator_Activity::class.java)
+            var intent = Intent(this@HomeActivity, GameActivity::class.java)
             startActivity(intent)
             return@setOnClickListener
         }

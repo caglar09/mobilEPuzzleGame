@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ImageActivity" />
-        <activity android:name=".Bitmap_Generator_Activity" />
+        <activity android:name=".GameActivity" />
         <activity android:name=".LevelActivity" />
         <activity android:name=".MainActivity" />
     </application>

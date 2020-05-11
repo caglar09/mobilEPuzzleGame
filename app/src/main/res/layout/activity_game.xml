@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingVertical="10sp"
-    tools:context=".Bitmap_Generator_Activity">
+    tools:context=".GameActivity">
 
 
     <LinearLayout
