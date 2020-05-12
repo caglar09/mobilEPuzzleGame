@@ -60,6 +60,11 @@ class MainActivity : AppCompatActivity(),LifecycleOwner {
             updateTransform()
         }
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true

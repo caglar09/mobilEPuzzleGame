@@ -9,6 +9,8 @@
         <item name="android:homeAsUpIndicator">
             @drawable/back_button_icon
         </item>
+
+        <item name="buttonStyle">?android:borderlessButtonStyle</item>
     </style>
 
 </resources>

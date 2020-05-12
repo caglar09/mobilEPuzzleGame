@@ -299,5 +299,4 @@ class BitmapRecyclerAdapters : RecyclerView.Adapter<BitmapRecyclerAdapters.ViewH
         val txtId = itemView.findViewById<TextView>(R.id.txtItemId)
     }
 
-
 }
