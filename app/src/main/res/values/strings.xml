@@ -4,4 +4,6 @@
     <string name="new_level_add">Yeni Bölüm Ekle</string>
     <string name="action_showCamera">Kamera Aç</string>
     <string name="image_Tag">ImageTag</string>
+    <string name="object_name_hint">Nesnenin adı</string>
+    <string name="delete">Sil</string>
 </resources>

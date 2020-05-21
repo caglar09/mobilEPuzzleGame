@@ -19,14 +19,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".GameActivity"/>
+        <activity
+            android:name=".SectionActivity"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".CameraActivity"
+            android:launchMode="standard" />
         <activity
             android:name=".ImageActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".GameActivity"
-            android:launchMode="singleTop" />
-        <activity
-            android:name=".LevelActivity"
-            android:launchMode="singleTop" />
+           />
     </application>
 </manifest>

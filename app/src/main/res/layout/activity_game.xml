@@ -32,11 +32,12 @@
         android:orientation="horizontal"
         android:paddingHorizontal="20dp">
 
-       <androidx.recyclerview.widget.RecyclerView
-           android:id="@+id/grd_BitmapListView"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent"
-           android:layout_marginTop="30dp"
-           app:spanCount="4" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/grd_BitmapListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
+            android:elevation="1dp"
+            app:spanCount="4" />
     </LinearLayout>
 </LinearLayout>

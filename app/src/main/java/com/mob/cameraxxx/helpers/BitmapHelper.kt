@@ -1,6 +1,7 @@
 package com.mob.cameraxxx.helpers
 
 import android.graphics.Bitmap
+import android.util.Log
 import com.mob.cameraxxx.data.BitmapModel
 
 class BitmapHelper {
@@ -18,6 +19,7 @@ class BitmapHelper {
             width = bitmap.width / xCount
             // Divide the original bitmap height by the desired horizontal row count
             height = bitmap.height / yCount
+
             // Loop the array and create bitmaps for each coordinate
             var index:Int=0
             for (y in 0 until yCount) {

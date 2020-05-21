@@ -10,10 +10,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.view.DragEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
@@ -22,7 +19,9 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.mob.cameraxxx.R
 import com.mob.cameraxxx.data.BitmapModel
+import com.mob.cameraxxx.service.StartDragListener
 import kotlinx.android.synthetic.main.bitmap_partial.view.*
+
 
 class BitmapAdapters : BaseAdapter {
     var _bMpas = arrayListOf<Bitmap>()
@@ -260,11 +259,14 @@ class BitmapRecyclerAdapters : RecyclerView.Adapter<BitmapRecyclerAdapters.ViewH
     var row: Int = 0
     private var count: Int = 0
 
-    constructor(ctx: Context, bMaps: ArrayList<BitmapModel>, _row: Int, _count: Int) {
+    private val _mStartDragListener: StartDragListener
+
+    constructor(ctx: Context, bMaps: ArrayList<BitmapModel>, _row: Int, _count: Int, mStartDragListener: StartDragListener) {
         _bMpas = bMaps
         _context = ctx
         row = _row
         count = _count
+        _mStartDragListener = mStartDragListener
     }
 
     @SuppressLint("NewApi")
@@ -287,6 +289,16 @@ class BitmapRecyclerAdapters : RecyclerView.Adapter<BitmapRecyclerAdapters.ViewH
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder?.image?.setImageBitmap(_bMpas[position].image)
         holder?.txtId?.setText(_bMpas[position].id.toString())
+        holder?.image?.setOnTouchListener(View.OnTouchListener { v, event ->
+            when(event.action){
+                MotionEvent.ACTION_DOWN->{
+                    _mStartDragListener.requestDrag(holder)
+                    true
+                }
+                else->
+                    false
+            }
+        })
     }
 
 
