@@ -10,4 +10,6 @@
     <string name="save">Kaydet</string>
     <string name="cancel">İptal</string>
     <string name="required">Bu alan boş geçilemez.</string>
+    <string name="add_Section">Ekle</string>
+    <string name="sections">Bolumler</string>
 </resources>

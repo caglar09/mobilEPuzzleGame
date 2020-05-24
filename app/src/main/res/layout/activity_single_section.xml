@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
     <Button
-        android:id="@+id/btn_Section"
+        android:id="@+id/btn_Section_click"
         style="@style/circleSectionButton"
         android:layout_width="72dp"
         android:layout_height="72dp"
-        android:layout_weight="1"
         android:width="72dp"
         android:height="72dp"
-        android:text="Null" />
+        android:text="Null"
+        android:background="@drawable/circle_bg_foreground" />
 
 
 </RelativeLayout>

@@ -10,7 +10,6 @@
         <item name="android:homeAsUpIndicator">@drawable/back_button_icon</item>
         <item name="buttonStyle">?android:borderlessButtonStyle</item>
         <item name="android:textViewStyle">?android:textViewStyle</item>
-
     </style>
 
     <style name="CustomButtonStyle" parent="AppTheme">

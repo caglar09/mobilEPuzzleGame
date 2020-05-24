@@ -9,6 +9,7 @@ import android.view.*
 import android.webkit.WebSettings
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.mob.cameraxxx.ImageActivity
 import com.mob.cameraxxx.adapters.SectionAdapters
@@ -29,17 +30,34 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val img = itemView.findViewById<Button>(R.id.btn_Section)
+        val img = itemView.findViewById<Button>(R.id.btn_Section_click)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         var view = LayoutInflater.from(_context).inflate(R.layout.activity_single_section, parent, false)
-
+        view!!.setOnCreateContextMenuListener(this@SectionAdapters)
         view!!.setOnClickListener { v ->
             //var img = v.findViewById<ImageView>(R.id.img)
+            var img = v.findViewById<Button>(R.id.btn_Section_click)
+            img.setOnTouchListener(View.OnTouchListener { t, event ->
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                       Toast.makeText(_context,"Test",Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    else ->
+                        false
+                }
+            })
+            img.setOnClickListener { v ->
+                Toast.makeText(_context,"Test",Toast.LENGTH_SHORT).show()
+            }
+        }
+        /*view!!.setOnClickListener { v ->
+            //var img = v.findViewById<ImageView>(R.id.img)
             var img = v.findViewById<Button>(R.id.btn_Section)
-            /* img.setOnTouchListener(View.OnTouchListener { t, event ->
+             img.setOnTouchListener(w.OnTouchListener { t, event ->
                  when (event.action) {
                      MotionEvent.ACTION_DOWN -> {
                          var imageId = t.getTag(R.string.image_Tag).toString()
@@ -57,9 +75,8 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
                 val intent = Intent(_context!!, ImageActivity::ass.java)
                 intent.putExtra("imgSource", filePath)
                 _context!!.startActivity(intent)
-            }*/
-        }
-        view!!.setOnCreateContextMenuListener(this@SectionAdapters)
+            }
+         }*/
         return ViewHolder(view)
     }
 
@@ -72,18 +89,18 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
         val bitmap = ImageHelper.Base64ToBitmap(section.image)
         if (bitmap != null) {
             //holder?.img.setImageBitmap(bitmap)
-            holder?.img.text=(position+1).toString()
-            var size=22
-            holder?.img.setTextSize(TypedValue.COMPLEX_UNIT_DIP,size.toFloat())
+            holder?.img.text = (position + 1).toString()
+            var size = 22
+            holder?.img.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size.toFloat())
             holder?.img.setTag(R.string.image_Tag, section.id)
         }
 
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        //var img=v!!.findViewById<ImageView>(R.id.img)
-        var img=v!!.findViewById<Button>(R.id.btn_Section)
-        var id=img.getTag(R.string.image_Tag).toString().toInt()
+//var img=v!!.findViewById<ImageView>(R.id.img)
+        var img = v!!.findViewById<Button>(R.id.btn_Section_click)
+        var id = img.getTag(R.string.image_Tag).toString().toInt()
         menu!!.setHeaderTitle("İşlemler")
         menu!!.setHeaderIcon(R.drawable.ic_android)
         menu!!.add(0, id, 0, "Sil")

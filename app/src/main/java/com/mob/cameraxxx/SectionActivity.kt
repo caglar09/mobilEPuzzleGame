@@ -47,12 +47,12 @@ class SectionActivity() : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_section)
-
+        /*
         setSupportActionBar(findViewById(R.id.levelActicityToolbar))
         supportActionBar!!.setDisplayShowTitleEnabled(true)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setTitle("Bölümler")
-
+*/
         lst_RecyImagelist = findViewById<RecyclerView>(R.id.grd_RecyclerImageList)
         dataAdapterService = DataAdapterService(this)
 
