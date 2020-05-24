@@ -3,7 +3,11 @@ package com.mob.cameraxxx.adapters
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.util.Size
+import android.util.TypedValue
 import android.view.*
+import android.webkit.WebSettings
+import android.widget.Button
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.mob.cameraxxx.ImageActivity
@@ -25,15 +29,16 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val img = itemView.findViewById<ImageView>(R.id.img)
+        val img = itemView.findViewById<Button>(R.id.btn_Section)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
-        var view = LayoutInflater.from(parent?.context).inflate(R.layout.activity_single_image, parent, false)
+        var view = LayoutInflater.from(_context).inflate(R.layout.activity_single_section, parent, false)
 
         view!!.setOnClickListener { v ->
-            var img = v.findViewById<ImageView>(R.id.img)
+            //var img = v.findViewById<ImageView>(R.id.img)
+            var img = v.findViewById<Button>(R.id.btn_Section)
             /* img.setOnTouchListener(View.OnTouchListener { t, event ->
                  when (event.action) {
                      MotionEvent.ACTION_DOWN -> {
@@ -54,7 +59,7 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
                 _context!!.startActivity(intent)
             }*/
         }
-        view.setOnCreateContextMenuListener(this)
+        view!!.setOnCreateContextMenuListener(this@SectionAdapters)
         return ViewHolder(view)
     }
 
@@ -66,14 +71,18 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
         var section = _sections[position]
         val bitmap = ImageHelper.Base64ToBitmap(section.image)
         if (bitmap != null) {
-            holder?.img.setImageBitmap(bitmap)
+            //holder?.img.setImageBitmap(bitmap)
+            holder?.img.text=(position+1).toString()
+            var size=22
+            holder?.img.setTextSize(TypedValue.COMPLEX_UNIT_DIP,size.toFloat())
             holder?.img.setTag(R.string.image_Tag, section.id)
         }
 
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-        var img=v!!.findViewById<ImageView>(R.id.img)
+        //var img=v!!.findViewById<ImageView>(R.id.img)
+        var img=v!!.findViewById<Button>(R.id.btn_Section)
         var id=img.getTag(R.string.image_Tag).toString().toInt()
         menu!!.setHeaderTitle("İşlemler")
         menu!!.setHeaderIcon(R.drawable.ic_android)

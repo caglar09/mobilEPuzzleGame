@@ -1,18 +1,23 @@
 package com.mob.cameraxxx
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.AttributeSet
+import android.util.Xml
 import android.view.*
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.setMargins
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +33,7 @@ private const val REQUEST_CODE_PERMISSIONS = 10
 
 // This is an array of all the permission specified in the manifest.
 private val REQUIRED_PERMISSIONS = emptyArray<String>()
+
 //Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE
 class SectionActivity() : AppCompatActivity() {
     var imageList = ArrayList<Image>()
@@ -86,11 +92,18 @@ class SectionActivity() : AppCompatActivity() {
         return true
     }
 
+    @SuppressLint("ResourceType")
     fun setData() {
         sections = dataAdapterService.getSections()
-        var gridLayoutManager = GridLayoutManager(this, 3, LinearLayoutManager.VERTICAL, false)
+        var gridLayoutManager = GridLayoutManager(this, 4, LinearLayoutManager.VERTICAL, false)
+      //  gridLayoutManager.generateDefaultLayoutParams().setMargins(100, 0, 10, 0)
+        /*  var parser=resources.getXml(R.style.gridLayoutManagerStyle)
+          var attr= Xml.asAttributeSet(parser)
 
+          gridLayoutManager.generateLayoutParams(this@SectionActivity,attr)*/
         lst_RecyImagelist.layoutManager = gridLayoutManager
+
+        lst_RecyImagelist.addItemDecoration(ItemDecoration(4,60,true))
         //lst_RecyImagelist.adapter = ImageViewAdapter(this, imageList)
         lst_RecyImagelist.adapter = SectionAdapters(this, sections)
         registerForContextMenu(lst_RecyImagelist)
@@ -150,6 +163,39 @@ class SectionActivity() : AppCompatActivity() {
 
 }
 
+class ItemDecoration : RecyclerView.ItemDecoration {
+    var spanCount: Int
+    var spacing: Int
+    var includeEdge: Boolean
+
+    constructor(_spanCount: Int, _spacing: Int, _includeEdge: Boolean) {
+        spanCount = _spanCount
+        spacing = _spacing
+        includeEdge = _includeEdge
+
+    }
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+       var position = parent.getChildAdapterPosition(view); // item position
+        var column = position % spanCount; // item column
+
+        if (includeEdge) {
+            outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+            outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+            if (position < spanCount) { // top edge
+                outRect.top = spacing;
+            }
+            outRect.bottom = spacing; // item bottom
+        } else {
+            outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+            outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+            if (position >= spanCount) {
+                outRect.top = spacing; // item top
+            }
+        }
+    }
+}
 
 /*
 

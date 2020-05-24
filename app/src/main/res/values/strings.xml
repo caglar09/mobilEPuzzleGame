@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">MobileGame</string>
-    <string name="game_Start_Title">Oyun Oyna</string>
+    <string name="game_Start_Title">Oyuna Basla</string>
     <string name="new_level_add">Yeni Bölüm Ekle</string>
     <string name="action_showCamera">Kamera Aç</string>
     <string name="image_Tag">ImageTag</string>
-    <string name="object_name_hint">Nesnenin adı</string>
+    <string name="trName">Türkçe</string>
+    <string name="enName">İnglizce</string>
     <string name="delete">Sil</string>
+    <string name="save">Kaydet</string>
+    <string name="cancel">İptal</string>
+    <string name="required">Bu alan boş geçilemez.</string>
 </resources>

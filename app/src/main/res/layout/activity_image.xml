@@ -8,7 +8,7 @@
     android:weightSum="8"
     tools:context=".ImageActivity">
 
-     <LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4.5"
@@ -52,19 +52,62 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="4.5">
+
+            android:gravity="center_horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtObjectField"
-                android:layout_width="match_parent"
+                android:layout_width="391dp"
                 android:layout_height="wrap_content"
-                android:hint="@string/object_name_hint"
-                android:layout_marginHorizontal="@dimen/margin_1">
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="@dimen/margin_1"
+                android:layout_marginTop="20dp"
+                android:hint="@string/trName"
+                app:counterEnabled="true"
+                app:counterMaxLength="30"
+                app:startIconDrawable="@drawable/ic_text_fields_black_24dp"
+                app:errorEnabled="true"
+                app:helperText="@string/required"
+                app:helperTextEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/txtObjectField2"
+                android:layout_width="391dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginHorizontal="@dimen/margin_1"
+                android:layout_marginTop="90dp"
+                android:hint="@string/enName"
+                app:counterEnabled="true"
+                app:counterMaxLength="30"
+                app:startIconDrawable="@drawable/ic_text_fields_black_24dp"
+                app:errorEnabled="true"
+                app:helperText="@string/required"
+                app:helperTextEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:theme="@style/CustomButtonStyle"
+                android:layout_width="121dp"
+                android:layout_height="45dp"
+                android:layout_below="@+id/txtObjectField2"
+                android:layout_alignStart="@+id/txtObjectField2"
+                android:layout_alignEnd="@+id/txtObjectField2"
+                android:layout_marginStart="264dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="6dp"
+                android:text="@string/save"></Button>
         </RelativeLayout>
 
     </LinearLayout>

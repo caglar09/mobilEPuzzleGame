@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorBlack">#000000</color>
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
@@ -7,4 +8,9 @@
     <color name="shrine_pink_light">#ECEFF1</color>
     <color name="shrine_pink_100">#CFD8DC</color>
     <color name="shrine_pink_900">#263238</color>
+    <color name="colorPurple">#DD105E</color>
+    <color name="colorDarkBlue">#46466E</color>
+    <color name="colorLigtBlue">#BDBDD7</color>
+    <color name="colorYellow">#ffff00</color>
+    <color name="colorGreen">#38761D</color>
 </resources>

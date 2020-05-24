@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <resources>
 
     <!-- Base application theme. -->
@@ -6,37 +7,28 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:homeAsUpIndicator">
-            @drawable/back_button_icon
-        </item>
-
+        <item name="android:homeAsUpIndicator">@drawable/back_button_icon</item>
         <item name="buttonStyle">?android:borderlessButtonStyle</item>
         <item name="android:textViewStyle">?android:textViewStyle</item>
-    </style>
-    <style name="MaterialAlertDialog.App" parent="MaterialAlertDialog.MaterialComponents">
-        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
+
     </style>
 
-    <style name="MaterialAlertDialog.App.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
-        <item name="android:textColor">@color/shrine_pink_900</item>
+    <style name="CustomButtonStyle" parent="AppTheme">
+        <item name="android:strokeWidth">2</item>
+        <item name="android:strokeColor">@color/colorWhite</item>
+        <item name="android:background">@drawable/border</item>
+        <item name="android:backgroundTint">@color/colorYellow</item>
     </style>
 
-    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
+    <style name="circleSectionButton" parent="AppTheme">
+        <item name="android:background">@drawable/circle_bg</item>
+        <item name="android:strokeWidth">2</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:strokeColor">@color/colorWhite</item>
+        <item name="android:fontFamily">@font/technique_bold_rgvoy</item>
     </style>
 
-    <style name="ThemeOverlay.App.Button" parent="">
-        <item name="colorPrimary">@color/shrine_pink_900</item>
-    </style>
-
-    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-        <item name="cornerFamily">cut</item>
-        <item name="cornerSize">8dp</item>
-    </style>
-
-    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-        <item name="cornerFamily">cut</item>
-        <item name="cornerSize">4dp</item>
+    <style name="gridLayoutManagerStyle" parent="AppTheme">
+        <item name="android:backgroundTint">@color/colorPurple</item>
     </style>
 </resources>
