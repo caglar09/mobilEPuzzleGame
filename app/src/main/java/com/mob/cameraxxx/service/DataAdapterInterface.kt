@@ -1,5 +1,6 @@
 package com.mob.cameraxxx.service
 
+import com.mob.cameraxxx.data.App
 import com.mob.cameraxxx.data.Section
 
 public interface DataAdapterInterface {
@@ -8,6 +9,5 @@ public interface DataAdapterInterface {
     fun getSection(sectionId: Long): Section?
     fun saveSection(section: Section): Boolean
     fun deleteSection(sectionId: Long): Boolean
-
-
+    fun getAppConfig(): App
 }

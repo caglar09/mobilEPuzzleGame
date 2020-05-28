@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="42.000000dp"
+    android:height="42.000000dp"
+    android:viewportWidth="131.000000"
+    android:viewportHeight="124.000000">
+
+    <group
+        android:translateY="124.000000"
+        android:scaleX="0.100000"
+        android:scaleY="-0.100000">
+        <path
+            android:fillColor="#FF954F"
+            android:strokeWidth="1"
+            android:strokeColor="#FF954F"
+            android:pathData="M290 620 l0 -230 175 0 175 0 0 40 0 39 -132 3 -133 3 0 50 0 50 113 3 112 3 0 39
+0 39 -112 3 -113 3 0 50 0 50 133 3 132 3 0 39 0 40 -175 0 -175 0 0 -230z m320
+190 c0 -19 -7 -20 -130 -20 l-130 0 0 -75 0 -75 110 0 c103 0 110 -1 110 -20 0 -19
+-7 -20 -110 -20 l-110 0 0 -75 0 -75 130 0 c123 0 130 -1 130 -20 0 -19 -7 -20
+-150 -20 l-150 0 0 210 0 210 150 0 c143 0 150 -1 150 -20z" />
+        <path
+            android:fillColor="#FF954F"
+            android:strokeWidth="1"
+            android:strokeColor="#FF954F"
+            android:pathData="M710 565 l0 -175 40 0 40 0 0 135 0 135 75 0 75 0 0 -135 0 -135 40 0 40 0 0 150
+c0 147 -1 152 -25 175 -21 22 -33 25 -95 25 -39 0 -80 -5 -91 -10 -13 -7 -19 -7
+-19 0 0 5 -18 10 -40 10 l-40 0 0 -175z m50 -5 c0 -127 -2 -150 -15 -150 -13 0 -15
+23 -15 150 0 127 2 150 15 150 13 0 15 -23 15 -150z m230 124 c6 -14 10 -81 10
+-150 0 -117 -1 -124 -20 -124 -19 0 -20 7 -20 135 l0 135 -86 0 c-76 0 -85 2 -74
+15 9 11 34 15 96 15 81 0 85 -1 94 -26z" />
+    </group>
+</vector>

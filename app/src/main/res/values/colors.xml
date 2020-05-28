@@ -12,5 +12,7 @@
     <color name="colorDarkBlue">#46466E</color>
     <color name="colorLigtBlue">#BDBDD7</color>
     <color name="colorYellow">#ffff00</color>
-    <color name="colorGreen">#38761D</color>
+    <color name="colorGreen">#009e0f</color>
+    <color name="colorDanger">#990000</color>
+    <color name="colorBlue">#2b78e4</color>
 </resources>

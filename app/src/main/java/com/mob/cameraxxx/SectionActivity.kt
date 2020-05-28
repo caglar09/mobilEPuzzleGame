@@ -1,33 +1,30 @@
 package com.mob.cameraxxx
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.graphics.Rect
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.util.AttributeSet
-import android.util.Xml
-import android.view.*
-import android.widget.*
-import androidx.appcompat.app.AlertDialog
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView.AdapterContextMenuInfo
+import android.widget.ImageButton
+import android.widget.RelativeLayout
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.setMargins
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mob.cameraxxx.adapters.ImageViewAdapter
 import com.mob.cameraxxx.adapters.SectionAdapters
+import com.mob.cameraxxx.constant.Constants
 import com.mob.cameraxxx.data.Image
 import com.mob.cameraxxx.data.Section
 import com.mob.cameraxxx.service.DataAdapterService
-import kotlinx.android.synthetic.main.activity_section.*
 import java.io.File
+
 
 private const val REQUEST_CODE_PERMISSIONS = 10
 
@@ -38,25 +35,43 @@ private val REQUIRED_PERMISSIONS = emptyArray<String>()
 class SectionActivity() : AppCompatActivity() {
     var imageList = ArrayList<Image>()
     var sections = ArrayList<Section>()
-    private lateinit var lst_Imagelist: GridView
+    private var btn_CameraRedirect: ImageButton? = null
+    private var btn_backButton: ImageButton? = null
+    private lateinit var btn_camera_redirect_layout: RelativeLayout
     private lateinit var lst_RecyImagelist: RecyclerView
-
+    private var _isEditable: Boolean = false
     lateinit var dataAdapterService: DataAdapterService
+    private lateinit var _sectionAdapter: SectionAdapters
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_section)
-        /*
-        setSupportActionBar(findViewById(R.id.levelActicityToolbar))
+        /*setSupportActionBar(findViewById(R.id.levelActicityToolbar))
         supportActionBar!!.setDisplayShowTitleEnabled(true)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setTitle("Bölümler")
-*/
+        supportActionBar!!.setTitle("Bölümler")*/
+        var isEditable: Boolean = intent.getBooleanExtra(Constants.IS_EDITTABLE_KEY, false)
+        _isEditable = isEditable
+
+        btn_camera_redirect_layout = findViewById<RelativeLayout>(R.id.btn_camera_redirect_layout)
+        btn_CameraRedirect = findViewById<ImageButton>(R.id.btn_camera_redirect)
+        btn_backButton = findViewById<ImageButton>(R.id.btn_back)
         lst_RecyImagelist = findViewById<RecyclerView>(R.id.grd_RecyclerImageList)
         dataAdapterService = DataAdapterService(this)
+        btn_CameraRedirect!!.setOnClickListener { v ->
+            startActivity(Intent(this@SectionActivity, CameraActivity::class.java))
+        }
+        btn_backButton!!.setOnClickListener { v ->
+            onBackPressed()
+        }
+        if (!_isEditable) {
+            btn_CameraRedirect!!.visibility = View.GONE
+            btn_camera_redirect_layout.visibility = View.GONE
 
+        }
         if (allPermissionsGranted()) {
+            sections = dataAdapterService.getSections()
             setData()
         } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
@@ -69,23 +84,6 @@ class SectionActivity() : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        var handler = Handler()
-        return when (item.itemId) {
-            R.id.action_showCamera -> {
-                handler.postDelayed(object : Runnable {
-                    override fun run() {
-                        startActivity(Intent(this@SectionActivity, CameraActivity::class.java))
-                    }
-                }, 0)
-                true
-            }
-            else -> {
-                return super.onOptionsItemSelected(item)
-            }
-        }
-
-    }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -94,18 +92,13 @@ class SectionActivity() : AppCompatActivity() {
 
     @SuppressLint("ResourceType")
     fun setData() {
-        sections = dataAdapterService.getSections()
-        var gridLayoutManager = GridLayoutManager(this, 4, LinearLayoutManager.VERTICAL, false)
-      //  gridLayoutManager.generateDefaultLayoutParams().setMargins(100, 0, 10, 0)
-        /*  var parser=resources.getXml(R.style.gridLayoutManagerStyle)
-          var attr= Xml.asAttributeSet(parser)
 
-          gridLayoutManager.generateLayoutParams(this@SectionActivity,attr)*/
+        var gridLayoutManager = GridLayoutManager(this, 4, LinearLayoutManager.VERTICAL, false)
         lst_RecyImagelist.layoutManager = gridLayoutManager
 
-        lst_RecyImagelist.addItemDecoration(ItemDecoration(4,60,true))
+        lst_RecyImagelist.addItemDecoration(ItemDecoration(4, 30, true))
         //lst_RecyImagelist.adapter = ImageViewAdapter(this, imageList)
-        lst_RecyImagelist.adapter = SectionAdapters(this, sections)
+        lst_RecyImagelist.adapter = SectionAdapters(this, sections, dataAdapterService, _isEditable)
         registerForContextMenu(lst_RecyImagelist)
     }
 
@@ -122,26 +115,6 @@ class SectionActivity() : AppCompatActivity() {
         }
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        var sectionId = item.itemId
-
-        var builder = AlertDialog.Builder(this@SectionActivity)
-        builder.setTitle("Bu bölümü silmek istediğinize emin misiniz?")
-        builder.setPositiveButton("Evet") { dialog, which ->
-            var result = dataAdapterService.deleteSection(sectionId = sectionId.toLong())
-            if (result) {
-                sections = dataAdapterService.getSections()
-                Toast.makeText(this@SectionActivity, "Silme işlemi başarılı", Toast.LENGTH_LONG).show()
-                grd_RecyclerImageList!!.adapter = SectionAdapters(this@SectionActivity, sections)
-            } else
-                Toast.makeText(this@SectionActivity, "Silme işlemi başarısız", Toast.LENGTH_LONG).show()
-        }
-        builder.setNegativeButton("Hayır") { dialog, which ->
-            closeContextMenu()
-        }
-        builder.show()
-        return super.onContextItemSelected(item)
-    }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
@@ -176,7 +149,7 @@ class ItemDecoration : RecyclerView.ItemDecoration {
     }
 
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-       var position = parent.getChildAdapterPosition(view); // item position
+        var position = parent.getChildAdapterPosition(view); // item position
         var column = position % spanCount; // item column
 
         if (includeEdge) {

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MobileGame</string>
+    <string name="app_name">Puzzle Game</string>
     <string name="game_Start_Title">Oyuna Basla</string>
     <string name="new_level_add">Yeni Bölüm Ekle</string>
     <string name="action_showCamera">Kamera Aç</string>
@@ -12,4 +12,5 @@
     <string name="required">Bu alan boş geçilemez.</string>
     <string name="add_Section">Ekle</string>
     <string name="sections">Bolumler</string>
+    <string name="help_btn_content_description">Help Button</string>
 </resources>

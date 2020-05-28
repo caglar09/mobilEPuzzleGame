@@ -6,6 +6,7 @@ import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.mob.cameraxxx.constant.Constants
+import com.mob.cameraxxx.data.App
 import com.mob.cameraxxx.data.AppModel
 import com.mob.cameraxxx.data.Section
 import java.lang.Exception
@@ -34,6 +35,7 @@ class DataAdapterService : DataAdapterInterface {
             if (!appLaunchStatus) {
                 sharedPreferences.edit().putString(Constants.SECTION_KEY, gson.toJson(model.sections)).apply()
                 sharedPreferences.edit().putString(Constants.USER_KEY, gson.toJson(model.users)).apply()
+                sharedPreferences.edit().putString(Constants.APP_CONFIG_KEY, gson.toJson(model.app)).apply()
                 sharedPreferences.edit().putBoolean(Constants.IS_FIRST_LAUNCH_KEY, true).apply()
             }
             return true
@@ -60,7 +62,17 @@ class DataAdapterService : DataAdapterInterface {
     }
 
     override fun saveSection(section: Section): Boolean {
-        TODO("Not yet implemented")
+        try {
+            var sections = getSections()
+            sections.add(section)
+            var _allSectionJsonString = gson.toJson(sections).toString()
+            sharedPreferences.edit().remove(Constants.SECTION_KEY).apply()
+            sharedPreferences.edit().putString(Constants.SECTION_KEY, _allSectionJsonString).apply()
+            return true
+        } catch (ex: Exception) {
+            return false
+        }
+
     }
 
     override fun deleteSection(sectionId: Long): Boolean {
@@ -74,6 +86,16 @@ class DataAdapterService : DataAdapterInterface {
             return true
         } else {
             return false
+        }
+    }
+
+    override fun getAppConfig(): App {
+        try {
+            var configString = sharedPreferences.all.get(Constants.APP_CONFIG_KEY).toString()
+            var config = gson.fromJson(configString, App::class.java)
+            return config
+        } catch (ex: Exception) {
+            return App("", "")
         }
     }
 

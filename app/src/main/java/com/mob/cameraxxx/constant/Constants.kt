@@ -5,7 +5,9 @@ class Constants {
         const val SHARED_PREFERENCES_NAME ="com.mob.cameraxxx.shareddata"
         const val SECTION_KEY="SECTION"
         const val USER_KEY="USER"
-        const val CONFIG_KEY="APPCONFIG"
+        const val APP_CONFIG_KEY="APPCONFIG"
         const val IS_FIRST_LAUNCH_KEY="APP_FIRST_LAUNCH"
+        const val IS_EDITTABLE_KEY="isEditable"
+        const val SECTION_ID="sectionId"
     }
 }

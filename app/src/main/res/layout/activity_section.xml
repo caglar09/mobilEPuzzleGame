@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,12 +10,14 @@
     tools:context=".SectionActivity">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="92dp"
+        android:layout_gravity="center_horizontal|center_vertical"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_gravity="center_horizontal|center_vertical">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="-19dp">
 
         <ImageButton
             android:id="@+id/btn_back"
@@ -26,26 +28,27 @@
             android:layout_alignParentBottom="true"
 
             android:layout_gravity="left|center_vertical"
-            android:layout_marginStart="25dp"
+            android:layout_marginStart="22.5dp"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="22.5dp"
             android:background="@drawable/state_pressed_ripple"
             android:src="@drawable/ic_keyboard_arrow_left_black_24dp" />
 
         <TextView
             android:id="@+id/textView3"
-            android:layout_width="158dp"
-            android:layout_height="33dp"
+            android:layout_width="205dp"
+            android:layout_height="39dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_gravity="center_vertical|center_horizontal"
             android:layout_marginStart="120dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="120dp"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="86dp"
+            android:layout_marginBottom="15dp"
             android:fontFamily="@font/technique_light"
+            android:gravity="center|clip_vertical|center_horizontal"
             android:text="@string/sections"
             android:textAlignment="center"
             android:textSize="25dp" />
@@ -59,13 +62,15 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/btn_camera_redirect_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
+        tools:layout_editor_absoluteX="8dp">
 
         <ImageButton
-            android:id="@+id/btn_cameraAdd"
+            android:id="@+id/btn_camera_redirect"
             android:layout_width="62dp"
             android:layout_height="62dp"
             android:layout_alignParentEnd="true"
@@ -78,10 +83,11 @@
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="7.5"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/btn_camera_redirect_layout">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/grd_RecyclerImageList"
@@ -100,4 +106,4 @@
               -->
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

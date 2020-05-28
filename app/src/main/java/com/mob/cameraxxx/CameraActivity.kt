@@ -11,6 +11,7 @@ import android.util.*
 import android.view.Surface
 import android.view.TextureView
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -47,17 +48,6 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner {
         params.height=screenSize.width
         params.width=screenSize.width
         viewFinder.layoutParams=params
-        //  MaterialAlertDialogBuilder(this,R.style.ThemeOverlay_App_MaterialAlertDialog).setView(R.id.custom_alert).show()
-        /*   var levels = arrayListOf<Level>(
-                  Level(1, 1, "asdasd", arrayListOf("meyve", "sebze")),
-                  Level(2, 2, "deneme", arrayListOf("oyuncak", "teknoloji"))
-          )
-
-          var _gson = Gson()
-          var _levelJson = _gson.toJson(levels)/
-
-        var _levelConverted=on.fromJson(_levelJson,Array<Level>::class.java).asList()*/
-
         // Request camera permissions
         if (allPermissionsGranted()) {
             viewFinder.post { startCamera() }
@@ -140,7 +130,7 @@ class CameraActivity : AppCompatActivity(), LifecycleOwner {
 
         // Build the image capture use case and attach button click listener
 
-        findViewById<ImageButton>(R.id.capture_button).setOnClickListener {
+        findViewById<Button>(R.id.btn_TakePicture).setOnClickListener {
             val file = File(externalMediaDirs.first(), "${System.currentTimeMillis()}.jpg")
 
             imageCapture.takePicture(file, executor, object : ImageCapture.OnImageSavedListener {
