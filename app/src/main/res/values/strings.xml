@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Puzzle Game</string>
+    <string name="app_name">Çek Yap Öğren</string>
     <string name="game_Start_Title">Oyuna Basla</string>
     <string name="new_level_add">Yeni Bölüm Ekle</string>
     <string name="action_showCamera">Kamera Aç</string>
@@ -13,4 +13,14 @@
     <string name="add_Section">Ekle</string>
     <string name="sections">Bolumler</string>
     <string name="help_btn_content_description">Help Button</string>
+    <string name="game_help_tooltip_text">İlk olarak aşağıdaki gibi  puzzle\'ı tamamlayın.</string>
+    <!-- Tamamladıktan sonra aşağıda inglizce ve türkçe karşılıklarının bulunduğu alan açılacaktır. Yanlarında bulunan mikrofon tuşlarına basarak kelimeleri
+        seslendiriniz. -->
+    <string name="help_dialog">
+        Değerli Kullanıcı\nÖncelikle uygulamamızı kullandığınız için teşekkürler. Sizlere daha iyi hizmet sunabilmek için uygulamamız üzerinde açlışmalar gerçekleştirmekteyiz
+    </string>
+
+    <string name="whocontributed">
+        Çağlar YILDIRIM\nRamazan TORI\nEda ILDIR
+    </string>
 </resources>

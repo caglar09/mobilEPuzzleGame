@@ -31,7 +31,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var rotateAnimation: Animation
     lateinit var animationset: AnimationSet
     lateinit var rotateAndMove: Animation
-
+    lateinit var btn_info: ImageButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
@@ -41,6 +41,7 @@ class HomeActivity : AppCompatActivity() {
         dataAdapterService = DataAdapterService(this)
         dataAdapterService.initData("init.json")
         animationset = AnimationSet(true)
+        btn_info = findViewById(R.id.btn_info)
 
         animationMoveToBottom = AnimationUtils.loadAnimation(applicationContext, R.anim.move_top_to_bottom)
         animationMoveToTop = AnimationUtils.loadAnimation(applicationContext, R.anim.move_bottom_to_top)
@@ -54,7 +55,7 @@ class HomeActivity : AppCompatActivity() {
         game_icon!!.animation = rotateAndMove
         btnGameStart!!.animation = animationMoveToTop
         btnNewLevel!!.animation = fadeEffectAnim
-
+        btn_info!!.animation = fadeEffectAnim
 
         btnGameStart!!.setOnClickListener { v ->
             var intent = Intent(this@HomeActivity, SectionActivity::class.java)
@@ -85,11 +86,16 @@ class HomeActivity : AppCompatActivity() {
                     Toast.makeText(this, "Lütfen pin giriniz.", Toast.LENGTH_LONG).show()
                 }
             }
-
             cancelBtn.setOnClickListener { v ->
                 alertDialog.dismiss()
             }
             return@setOnClickListener
+        }
+
+        btn_info!!.setOnClickListener {
+            var infoView = layoutInflater.inflate(R.layout.activity_help_dialog, null)
+            var dialog = AlertDialog.Builder(this@HomeActivity).setTitle("Hakkında").setView(infoView)
+            dialog.show()
         }
     }
 

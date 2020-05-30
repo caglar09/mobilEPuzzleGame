@@ -30,4 +30,8 @@
     <style name="gridLayoutManagerStyle" parent="AppTheme">
         <item name="android:backgroundTint">@color/colorPurple</item>
     </style>
+    
+    <style name="DialogSlide">
+        <item name="android:windowEnterAnimation">@anim/move_bottom_to_top_500</item>
+    </style>
 </resources>

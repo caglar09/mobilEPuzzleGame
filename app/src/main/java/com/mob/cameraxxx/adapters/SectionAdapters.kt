@@ -44,6 +44,7 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val img = itemView.findViewById<Button>(R.id.btn_Section_click)
         val btn_trash_section = itemView.findViewById<ImageButton>(R.id.btn_trash_single_section)
+        var btn_complated_section = itemView.findViewById<ImageButton>(R.id.btn_complated_single_section2)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -77,6 +78,7 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
 
                     true
                 }
+                holder?.btn_complated_section.visibility = View.GONE
                 holder?.img.setOnFocusChangeListener { v: View?, hasFocus: Boolean ->
                     if (!hasFocus) {
                         v!!.findViewById<ImageButton>(R.id.btn_trash_single_section).visibility = View.GONE
@@ -86,6 +88,10 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
             } else {
                 holder?.img.setOnClickListener(this)
                 holder?.btn_trash_section.visibility = View.GONE
+                if (section.isCompleted)
+                    holder?.btn_complated_section.visibility = View.VISIBLE
+                else
+                    holder?.btn_complated_section.visibility = View.GONE
             }
 
 

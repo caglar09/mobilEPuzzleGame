@@ -110,7 +110,7 @@
                      android:paddingHorizontal="20dp">
 
                      <com.google.android.material.floatingactionbutton.FloatingActionButton
-                         android:id="@+id/floatingActionButton"
+                         android:id="@+id/btn_Translate"
                          android:layout_width="48dp"
                          android:layout_height="48dp"
                          android:layout_alignParentEnd="true"
@@ -119,6 +119,7 @@
                          android:background="@drawable/bg_translatebutton"
                          android:backgroundTint="#4D87EE"
                          android:clickable="true"
+                         android:foreground="@drawable/state_pressed_ripple"
                          android:foregroundGravity="center_vertical|center|center_horizontal"
                          android:textAlignment="center"
                          app:srcCompat="@drawable/ic_translate_black_24dp" />
@@ -138,7 +139,8 @@
                          app:counterMaxLength="30"
                          app:errorEnabled="true"
                          app:helperTextEnabled="true"
-                         app:startIconDrawable="@drawable/tr_icon">
+                         app:startIconDrawable="@drawable/tr_icon"
+                         app:endIconMode="clear_text">
 
                          <com.google.android.material.textfield.TextInputEditText
                              android:id="@+id/txt_tr"
@@ -163,7 +165,8 @@
                          app:counterMaxLength="30"
                          app:errorEnabled="true"
                          app:helperTextEnabled="true"
-                         app:startIconDrawable="@drawable/en_icon">
+                         app:startIconDrawable="@drawable/en_icon"
+                         app:endIconMode="clear_text">
 
                          <com.google.android.material.textfield.TextInputEditText
                              android:id="@+id/txt_en"

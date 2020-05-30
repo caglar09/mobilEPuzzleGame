@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingMode="stack">
+    <item
+        android:width="24dp"
+        android:height="24dp"
+        android:drawable="@drawable/circle_bg"
+        android:start="5dp"/>
+    <item
+        android:width="24dp"
+        android:height="24dp"
+        android:drawable="@drawable/ic_arrow_forward_white_24dp"
+        android:start="5dp"/>
+</layer-list>

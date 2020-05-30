@@ -66,13 +66,34 @@ class DataAdapterService : DataAdapterInterface {
             var sections = getSections()
             sections.add(section)
             var _allSectionJsonString = gson.toJson(sections).toString()
-            sharedPreferences.edit().remove(Constants.SECTION_KEY).apply()
-            sharedPreferences.edit().putString(Constants.SECTION_KEY, _allSectionJsonString).apply()
+            //sharedPreferences.edit().remove(Constants.SECTION_KEY).apply()
+            sharedPreferences.edit().putString(Constants.SECTION_KEY, _allSectionJsonString).commit()
             return true
         } catch (ex: Exception) {
             return false
         }
 
+    }
+
+    override fun updateSection(sectionId: Long, section: Section): Boolean {
+        var allSections = getSections()
+        var a = allSections.withIndex().find { r -> r.value.id == sectionId }!!.index
+        var _section = allSections[a]
+        if (_section == null)
+            return false
+        if (_section!!.isCompleted != section.isCompleted)
+            _section!!.isCompleted = section.isCompleted
+        if (_section.isKnowedEn != section.isKnowedEn)
+            _section.isKnowedEn = section.isKnowedEn
+        if (_section.isKnowedTr != section.isKnowedTr)
+            _section.isKnowedTr = section.isKnowedTr
+        if (_section.isPuzzleCompleted != section.isPuzzleCompleted)
+            _section.isPuzzleCompleted = section.isPuzzleCompleted
+
+        allSections[a] = _section
+        var _allSectionJsonString = gson.toJson(allSections).toString()
+        sharedPreferences.edit().putString(Constants.SECTION_KEY, _allSectionJsonString).commit()
+        return true
     }
 
     override fun deleteSection(sectionId: Long): Boolean {
@@ -81,12 +102,25 @@ class DataAdapterService : DataAdapterInterface {
         if (sectionIndex >= 0) {
             sections.removeAt(sectionIndex)
             var _sectionStrings = gson.toJson(sections).toString()
-            sharedPreferences.edit().remove(Constants.SECTION_KEY).apply()
-            sharedPreferences.edit().putString(Constants.SECTION_KEY, _sectionStrings).apply()
+            //sharedPreferences.edit().remove(Constants.SECTION_KEY).apply()
+            sharedPreferences.edit().putString(Constants.SECTION_KEY, _sectionStrings).commit()
             return true
         } else {
             return false
         }
+    }
+
+    override fun nextLevel(currentSectionId: Long): Section? {
+        var allsections = getSections()
+        var currentIdex = allsections.withIndex().find { r -> r.value.id == currentSectionId }!!.index
+        if (currentIdex == -1) {
+            return null
+        }
+        if ((currentIdex + 1) >= allsections.size) {
+            return null
+        }
+        var nextLevel = allsections.get(currentIdex + 1)
+        return nextLevel
     }
 
     override fun getAppConfig(): App {

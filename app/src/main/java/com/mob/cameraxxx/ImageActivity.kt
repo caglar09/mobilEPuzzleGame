@@ -1,6 +1,7 @@
 package com.mob.cameraxxx
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -15,10 +16,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
+import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
+import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslatorOptions
 import com.mob.cameraxxx.constant.Constants
 import com.mob.cameraxxx.data.Section
 import com.mob.cameraxxx.helpers.ImageHelper
@@ -40,7 +46,7 @@ class ImageActivity : AppCompatActivity() {
     private lateinit var txt_en: TextInputEditText
     private lateinit var txt_en_layout: TextInputLayout
     private lateinit var dataAdapterService: DataAdapterService
-
+    private lateinit var btn_Translate: FloatingActionButton
     private var formValid = false;
 
     @SuppressLint("RestrictedApi")
@@ -52,6 +58,7 @@ class ImageActivity : AppCompatActivity() {
         btn_rotate_image = findViewById(R.id.btn_rotate_to_right) as FloatingActionButton
         btn_saveSection = findViewById(R.id.btn_saveSection)
         btn_cancelSection = findViewById(R.id.btn_cancelSection)
+        btn_Translate = findViewById(R.id.btn_Translate)
         txt_tr = findViewById(R.id.txt_tr)
         txt_en = findViewById(R.id.txt_en)
         txt_tr_layout = findViewById(R.id.txt_tr_layout)
@@ -73,21 +80,35 @@ class ImageActivity : AppCompatActivity() {
                     takedImage = rotatedIMage!!.copy(rotatedIMage!!.config, true)
                     imgView!!.setImageBitmap(rotatedIMage)
                 }
+                btn_Translate.setOnClickListener {
+                    if (txt_tr.text.toString().isEmpty()) {
+                        Toast.makeText(this@ImageActivity, "Lütfen türkçe kelime alanını doldurun", Toast.LENGTH_LONG).show()
+                    } else {
+                        val fopt = FirebaseTranslatorOptions.Builder().setSourceLanguage(FirebaseTranslateLanguage.TR).setTargetLanguage(FirebaseTranslateLanguage.EN).build()
+                        val turkishEnglishTranslator = FirebaseNaturalLanguage.getInstance().getTranslator(fopt)
+                        val condition = FirebaseModelDownloadConditions.Builder().requireWifi().build()
+                        turkishEnglishTranslator.downloadModelIfNeeded(condition).addOnSuccessListener {
+                            turkishEnglishTranslator.translate(txt_tr.text.toString()).addOnSuccessListener { translatedText ->
+                                txt_en.setText(translatedText)
+                            }
+                        }.addOnFailureListener {}
+                    }
+
+                }
                 btn_saveSection.setOnClickListener { v ->
                     if (validateInputs() && formValid) {
 
                         var base64Image = ImageHelper.BitMapToBase64(takedImage)
                         var trText = txt_tr.text.toString()
                         var enText = txt_en.text.toString()
-                        var sec = Section(Date().time, 0, base64Image, trText, enText)
+                        var sec = Section(Date().time, 0, base64Image, trText, enText, false, false, false, false)
                         var result = dataAdapterService.saveSection(sec)
-                        if (result)
-                        {
-                            startActivity(Intent(this, SectionActivity::class.java).putExtra(Constants.IS_EDITTABLE_KEY, true))
+                        if (result) {
+                            var savedSection = dataAdapterService.getSection(sec.id)
+                            startActivity(Intent(this, GameActivity::class.java).putExtra(Constants.SECTION_ID, savedSection!!.id))
                             Toast.makeText(this, "Kayıt işlemi başarılı", Toast.LENGTH_LONG).show()
                             finish()
-                        }
-                        else
+                        } else
                             Toast.makeText(this, "Hata oluştu", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(this, "Lütfen bütün alanları doldurun", Toast.LENGTH_LONG).show()
@@ -95,6 +116,20 @@ class ImageActivity : AppCompatActivity() {
                 }
                 txt_tr.addTextChangedListener(textChangeValidation(txt_tr_layout))
                 txt_en.addTextChangedListener(textChangeValidation(txt_en_layout))
+
+                btn_cancelSection.setOnClickListener {
+                    var dialogBuilder = AlertDialog.Builder(this@ImageActivity)
+                    dialogBuilder.setMessage("Girdiğiniz bütün bilgiler silinecek! Çıkmak istediğinize emin misiniz?")
+                    dialogBuilder.setPositiveButton("Tamam") { dialog, which ->
+                        var redirectIntent = Intent(this@ImageActivity, CameraActivity::class.java)
+                        startActivity(redirectIntent)
+                        finish()
+                    }
+                    dialogBuilder.setNegativeButton("İptal") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    dialogBuilder.show()
+                }
 
             } else {
                 btn_rotate_image!!.visibility = View.INVISIBLE

@@ -96,7 +96,7 @@ class SectionActivity() : AppCompatActivity() {
         var gridLayoutManager = GridLayoutManager(this, 4, LinearLayoutManager.VERTICAL, false)
         lst_RecyImagelist.layoutManager = gridLayoutManager
 
-        lst_RecyImagelist.addItemDecoration(ItemDecoration(4, 30, true))
+      //  lst_RecyImagelist.addItemDecoration(ItemDecoration(4, 30, true))
         //lst_RecyImagelist.adapter = ImageViewAdapter(this, imageList)
         lst_RecyImagelist.adapter = SectionAdapters(this, sections, dataAdapterService, _isEditable)
         registerForContextMenu(lst_RecyImagelist)

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "953575892498",
+    "firebase_url": "https://puzzlegame-2f845.firebaseio.com",
+    "project_id": "puzzlegame-2f845",
+    "storage_bucket": "puzzlegame-2f845.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953575892498:android:570e92457499c2cb1adacb",
+        "android_client_info": {
+          "package_name": "com.mob.cameraxxx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953575892498-f3ka3q9npks9douppa9bha34ceovncik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDULPmnTw09OfcpTayaBMzqMbCCYx1uFWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953575892498-f3ka3q9npks9douppa9bha34ceovncik.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
