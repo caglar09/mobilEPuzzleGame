@@ -7,11 +7,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.provider.Settings
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -154,14 +152,14 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
             bitmapList = e
 
             var adapters = BitmapRecyclerAdapters(this, bitmapList!!, row, count, this)
-            // imageComponent.setImageBitmap(bmp)
-
             var gridLayoutManager = GridLayoutManager(this, row, LinearLayoutManager.VERTICAL, false)
 
             grd_GameRecylerView.layoutManager = gridLayoutManager
             grd_GameRecylerView.adapter = adapters
+
             touchHelper = ItemTouchHelper(simpleCallback)
             touchHelper.attachToRecyclerView(grd_GameRecylerView)
+
             textToSpeech = TextToSpeech(this@GameActivity, object : TextToSpeech.OnInitListener {
                 override fun onInit(status: Int) {
                     if (status != TextToSpeech.ERROR) {
@@ -169,6 +167,7 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
                     }
                 }
             })
+
             //#region ImagePreviwer
             var previewView = layoutInflater.inflate(R.layout.activity_game_preview_image, null)
             var previewImage = previewView.findViewById<ImageView>(R.id.img_review)
@@ -219,7 +218,8 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
                 confirmDialog.show()
             } else {
                 preview.show()
-            }//#endregion
+            }
+            //#endregion
 
             var listenerDialogView = LayoutInflater.from(this@GameActivity).inflate(R.layout.activity_game_microphone_dialog, null)
             var btn_speechOk = listenerDialogView.findViewById<Button>(R.id.btn_okSpeech)
@@ -312,9 +312,6 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         if (textToSpeech != null) {
             textToSpeech.stop()
         }
-        /*  if (myCountDownTimer!=null){
-              myCountDownTimer.cancel()
-          }*/
         super.onPause()
     }
 
@@ -468,7 +465,7 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
                     dialog.show()
                     relativeLayout_Step2.animation = AnimationUtils.loadAnimation(this@GameActivity, R.anim.move_bottom_to_top)
                     relativeLayout_Step2.visibility = View.VISIBLE
-                    }
+                }
             }
             return false
         }

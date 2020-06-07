@@ -8,10 +8,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationSet
 import android.view.animation.AnimationUtils
 import android.view.animation.GridLayoutAnimationController
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.drawToBitmap
@@ -31,6 +28,7 @@ class HomeActivity : AppCompatActivity() {
     lateinit var rotateAnimation: Animation
     lateinit var animationset: AnimationSet
     lateinit var rotateAndMove: Animation
+    lateinit var shakeAnim: Animation
     lateinit var btn_info: ImageButton
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,18 +36,18 @@ class HomeActivity : AppCompatActivity() {
         btnGameStart = findViewById<Button>(R.id.btn_gameStart)
         btnNewLevel = findViewById<ImageButton>(R.id.btn_newLevel)
         game_icon = findViewById(R.id.game_icon)
-        dataAdapterService = DataAdapterService(this)
-        dataAdapterService.initData("init.json")
-        animationset = AnimationSet(true)
         btn_info = findViewById(R.id.btn_info)
+        //Dataadapter Servis caglar
+        dataAdapterService = DataAdapterService(this@HomeActivity)
+        dataAdapterService.initData("init.json")
 
+        //Dataadapter Servis caglar
         animationMoveToBottom = AnimationUtils.loadAnimation(applicationContext, R.anim.move_top_to_bottom)
         animationMoveToTop = AnimationUtils.loadAnimation(applicationContext, R.anim.move_bottom_to_top)
         fadeEffectAnim = AnimationUtils.loadAnimation(applicationContext, R.anim.hide_to_show)
         rotateAnimation = AnimationUtils.loadAnimation(applicationContext, R.anim.rotate_animation)
         rotateAndMove = AnimationUtils.loadAnimation(applicationContext, R.anim.move_and_rotate_anim)
-        animationset.addAnimation(animationMoveToBottom)
-        animationset.addAnimation(rotateAnimation)
+        shakeAnim = AnimationUtils.loadAnimation(applicationContext, R.anim.shake_anim)
 
         //game_icon!!.animation=animationMoveToBottom
         game_icon!!.animation = rotateAndMove

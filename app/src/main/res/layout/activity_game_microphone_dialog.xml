@@ -19,35 +19,18 @@
         app:layout_constraintVertical_bias="0.5"
         app:srcCompat="@drawable/ic_mic_white_24dp" />
 
-    <!--
-        <com.eyalbira.loadingdots.LoadingDots
-            android:id="@+id/loadingDots"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:LoadingDots_auto_play="false"
-            app:LoadingDots_dots_count="3"
-            app:LoadingDots_dots_size="14dp"
-            app:LoadingDots_dots_space="1.2dp"
-            app:LoadingDots_loop_duration="1000"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/img_speachBtn" />
-    -->
-
-
     <TextView
         android:id="@+id/txt_readedText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:text=" "
+        android:textSize="18dp"
         android:textStyle="normal|italic"
         app:layout_constraintBottom_toTopOf="@+id/img_speachBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        android:textSize="18dp"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_cancelSpeech"

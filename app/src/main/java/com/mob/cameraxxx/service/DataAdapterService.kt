@@ -31,7 +31,7 @@ class DataAdapterService : DataAdapterInterface {
             var json = inputStream.bufferedReader().use { it.readText() }
             var model = gson.fromJson(json, AppModel::class.java)
 
-            var appLaunchStatus = sharedPreferences.getBoolean(Constants.IS_FIRST_LAUNCH_KEY, false)
+            var appLaunchStatus = sharedPreferences.getBoolean(Constants.IS_FIRST_LAUNCH_KEY, false) // ilk açılmada false diğer açılmalarda true dönüyor
             if (!appLaunchStatus) {
                 sharedPreferences.edit().putString(Constants.SECTION_KEY, gson.toJson(model.sections)).apply()
                 sharedPreferences.edit().putString(Constants.USER_KEY, gson.toJson(model.users)).apply()
@@ -129,7 +129,7 @@ class DataAdapterService : DataAdapterInterface {
             var config = gson.fromJson(configString, App::class.java)
             return config
         } catch (ex: Exception) {
-            return App("", "")
+            return App("")
         }
     }
 

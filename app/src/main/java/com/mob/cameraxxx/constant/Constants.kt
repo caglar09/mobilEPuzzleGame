@@ -9,10 +9,7 @@ class Constants {
         const val IS_FIRST_LAUNCH_KEY = "APP_FIRST_LAUNCH"
         const val IS_EDITTABLE_KEY = "isEditable"
         const val SECTION_ID = "sectionId"
-
-
-    }
-
+}
 }
 
 enum class RECOGNIZE_LANGUAGES {

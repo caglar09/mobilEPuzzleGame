@@ -97,7 +97,6 @@ class ImageActivity : AppCompatActivity() {
                 }
                 btn_saveSection.setOnClickListener { v ->
                     if (validateInputs() && formValid) {
-
                         var base64Image = ImageHelper.BitMapToBase64(takedImage)
                         var trText = txt_tr.text.toString()
                         var enText = txt_en.text.toString()
@@ -140,12 +139,6 @@ class ImageActivity : AppCompatActivity() {
             onBackPressed()
             finish()
         }
-        //var decodedString = Base64.decode(base64Image, Base64.DEFAULT)
-        //var decodedByte: Bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-        //imgView!!.setImageBitmap(decodedByte)
-        //imgView!!.setImageBitmap(img)
-
-
     }
 
     fun textChangeValidation(layout: TextInputLayout) = object : TextWatcher {
@@ -164,11 +157,9 @@ class ImageActivity : AppCompatActivity() {
         }
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
         }
     }
 

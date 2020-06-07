@@ -33,7 +33,6 @@
     }
   ],
   "app": {
-    "defaultPin": "1234",
-    "defaultUsername": "admin"
+    "defaultPin": "1234"
   }
 }

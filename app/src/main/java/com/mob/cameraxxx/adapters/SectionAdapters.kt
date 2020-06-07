@@ -2,30 +2,19 @@ package com.mob.cameraxxx.adapters
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.util.Size
 import android.util.TypedValue
 import android.view.*
 import android.view.animation.AnimationUtils
-import android.webkit.WebSettings
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.mob.cameraxxx.GameActivity
-import com.mob.cameraxxx.ImageActivity
-import com.mob.cameraxxx.adapters.SectionAdapters
 import com.mob.cameraxxx.R
 import com.mob.cameraxxx.constant.Constants
-import com.mob.cameraxxx.data.Image
 import com.mob.cameraxxx.data.Section
 import com.mob.cameraxxx.helpers.ImageHelper
 import com.mob.cameraxxx.service.DataAdapterService
-import java.io.File
-import java.util.function.IntToDoubleFunction
-import java.util.logging.Handler
 
 class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.OnClickListener {
     var _sections = arrayListOf<Section>()
@@ -100,9 +89,7 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
                 var result = _dataAdapterService.deleteSection(section.id)
                 if (result) {
                     _sections.remove(section)
-                    this.notifyItemRemoved(position)
-
-                } else
+                    this.notifyItemRemoved(position)} else
                     Toast.makeText(_context, "Silme işlemi başarısız", Toast.LENGTH_LONG).show()
                 result
             }
@@ -119,13 +106,5 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
         _context!!.startActivity(intent)
     }
 
-    /* override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
-         var img = v!!.findViewById<Button>(R.id.btn_Section_click)
-
-         var id = img.getTag(R.string.image_Tag).toString().toInt()
-         menu!!.setHeaderTitle("İşlemler")
-         menu!!.setHeaderIcon(R.drawable.ic_android)
-         menu!!.add(0, id, 0, "Sil")
-     }*/
 
 }
