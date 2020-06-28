@@ -1,2 +1,3 @@
-rootProject.name='CameraXXX'
+rootProject.name='EPuzzleGame'
 include ':app'
+

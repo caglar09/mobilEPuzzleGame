@@ -1,7 +1,6 @@
 package com.mob.cameraxxx.helpers
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.mob.cameraxxx.data.BitmapModel
 
 class BitmapHelper {

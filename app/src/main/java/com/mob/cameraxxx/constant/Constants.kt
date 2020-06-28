@@ -2,7 +2,7 @@ package com.mob.cameraxxx.constant
 
 class Constants {
     companion object {
-        const val SHARED_PREFERENCES_NAME = "com.mob.cameraxxx.shareddata"
+        const val SHARED_PREFERENCES_NAME = "com.mob.epuzzlegame.shareddata"
         const val SECTION_KEY = "SECTION"
         const val USER_KEY = "USER"
         const val APP_CONFIG_KEY = "APPCONFIG"

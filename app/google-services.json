@@ -8,12 +8,57 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:953575892498:android:570e92457499c2cb1adacb",
+        "mobilesdk_app_id": "1:953575892498:android:cc24bedd872a8aa51adacb",
         "android_client_info": {
           "package_name": "com.mob.cameraxxx"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "953575892498-c82jqan3ihmjb93s4f836gpeim044mms.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mob.cameraxxx",
+            "certificate_hash": "acdda99ae12b9b16136ea37277ee4085cdc6069f"
+          }
+        },
+        {
+          "client_id": "953575892498-f3ka3q9npks9douppa9bha34ceovncik.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDULPmnTw09OfcpTayaBMzqMbCCYx1uFWw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "953575892498-f3ka3q9npks9douppa9bha34ceovncik.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:953575892498:android:7d6cbe9bdbfe77001adacb",
+        "android_client_info": {
+          "package_name": "com.mob.epuzzlegame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "953575892498-7r8jr06n5r06a1umu5pciihc8p113uaa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mob.epuzzlegame",
+            "certificate_hash": "acdda99ae12b9b16136ea37277ee4085cdc6069f"
+          }
+        },
         {
           "client_id": "953575892498-f3ka3q9npks9douppa9bha34ceovncik.apps.googleusercontent.com",
           "client_type": 3

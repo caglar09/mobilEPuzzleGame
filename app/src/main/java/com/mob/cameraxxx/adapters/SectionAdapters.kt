@@ -7,8 +7,10 @@ import android.view.*
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.mob.cameraxxx.GameActivity
 import com.mob.cameraxxx.R
 import com.mob.cameraxxx.constant.Constants
@@ -17,6 +19,8 @@ import com.mob.cameraxxx.helpers.ImageHelper
 import com.mob.cameraxxx.service.DataAdapterService
 
 class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.OnClickListener {
+    var mAuth=FirebaseAuth.getInstance()
+    var dbref=FirebaseDatabase.getInstance().getReference("users").child(mAuth!!.uid!!.toString()).child("sections")
     var _sections = arrayListOf<Section>()
     var _context: Context? = null
     var _isEditable: Boolean = false
@@ -48,7 +52,8 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         var section = _sections[position]
         val bitmap = ImageHelper.Base64ToBitmap(section.image)
-        holder?.btn_trash_section.visibility = View.GONE
+       if (holder?.btn_trash_section.isVisible)
+           holder?.btn_trash_section.visibility = View.GONE
         if (bitmap != null) {
             //holder?.img.setImageBitmap(bitmap)
             holder?.img.text = (position + 1).toString()
@@ -77,7 +82,7 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
             } else {
                 holder?.img.setOnClickListener(this)
                 holder?.btn_trash_section.visibility = View.GONE
-                if (section.isCompleted)
+                if (section.completed)
                     holder?.btn_complated_section.visibility = View.VISIBLE
                 else
                     holder?.btn_complated_section.visibility = View.GONE
@@ -86,12 +91,15 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
 
 
             holder?.btn_trash_section.setOnClickListener {
-                var result = _dataAdapterService.deleteSection(section.id)
+                dbref.child(section.id).removeValue()
+               /* var result = _dataAdapterService.deleteSection(section.id).
                 if (result) {
                     _sections.remove(section)
-                    this.notifyItemRemoved(position)} else
-                    Toast.makeText(_context, "Silme işlemi başarısız", Toast.LENGTH_LONG).show()
-                result
+                    this.notifyItemRemoved(position)}
+
+                else
+                    Toast.makeText(_context, "Silme işlemi başarısız", Toast.LENGTH_LONG).show()*/
+                //result
             }
         }
 
@@ -100,9 +108,9 @@ class SectionAdapters : RecyclerView.Adapter<SectionAdapters.ViewHolder>, View.O
 
     override fun onClick(v: View?) {
         var _img = v!!.findViewById<Button>(R.id.btn_Section_click)
-        var tag = _img.getTag(R.string.image_Tag) as Long
+        var tag = _img.getTag(R.string.image_Tag) as String
         var intent = Intent(_context, GameActivity::class.java)
-        intent.putExtra(Constants.SECTION_ID, tag)
+        intent.putExtra(Constants.SECTION_ID, tag!!.toString())
         _context!!.startActivity(intent)
     }
 

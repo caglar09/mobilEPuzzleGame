@@ -33,6 +33,7 @@
     }
   ],
   "app": {
-    "defaultPin": "1234"
+    "defaultPin": "1234",
+    "teamName": "@Social Team"
   }
 }

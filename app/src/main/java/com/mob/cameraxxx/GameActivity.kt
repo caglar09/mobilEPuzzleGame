@@ -17,7 +17,6 @@ import android.speech.tts.TextToSpeech
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -31,6 +30,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.mob.cameraxxx.adapters.BitmapRecyclerAdapters
 import com.mob.cameraxxx.constant.Constants
 import com.mob.cameraxxx.constant.RECOGNIZE_LANGUAGES
@@ -40,20 +44,24 @@ import com.mob.cameraxxx.helpers.BitmapHelper
 import com.mob.cameraxxx.helpers.ImageHelper
 import com.mob.cameraxxx.service.DataAdapterService
 import com.mob.cameraxxx.service.StartDragListener
-import com.tomergoldst.tooltips.ToolTip
 import com.tomergoldst.tooltips.ToolTipsManager
 import java.util.*
+import kotlin.collections.HashMap
 
 private var REQUEST_CODE_PERMISSIONS: Int = 11
 private var REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.RECORD_AUDIO)
 
 @Suppress("DEPRECATION")
 class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.TipListener {
+    var mAuthUser = FirebaseAuth.getInstance()
+    var dbRef = FirebaseDatabase.getInstance().getReference("users").child(mAuthUser!!.uid!!).child("sections")
+
     //#region variables
     var bitmapList: ArrayList<BitmapModel>? = null
     var orderBitmapList: IntArray? = null
     val row: Int = 3
     val count: Int = 3
+    private var isFirstLoad: Boolean = true
 
     // lateinit var imageComponent: ImageView
     lateinit var grd_GameRecylerView: RecyclerView
@@ -125,176 +133,191 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
             var width = getDisplayMetrics().widthPixels
 
             var bmp: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.naturals)
-            var currentSectionId = intent.getLongExtra(Constants.SECTION_ID, 0)
+            var currentSectionId = intent.getStringExtra(Constants.SECTION_ID)
 
-            section = _dataAdapterService.getSection(currentSectionId.toLong())
-            if (section == null) {
-                var builder = AlertDialog.Builder(this)
-                builder.setMessage("Bölüm bulunamadı")
-                builder.setPositiveButton("Tamam", DialogInterface.OnClickListener { dialog, which ->
-                    var intent = Intent(this, SectionActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                })
-                builder.show()
+            dbRef.child(currentSectionId).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(s: DataSnapshot) {
+                    var _section = s.getValue(Section::class.java)
+                    section = _section
 
-            } else {
-                bmp = ImageHelper.Base64ToBitmap(section!!.image)
-            }
+                    if (isFirstLoad) {
+                        isFirstLoad = false
+                        if (section == null) {
+                            var builder = AlertDialog.Builder(this@GameActivity)
+                            builder.setMessage("Bölüm bulunamadı")
+                            builder.setPositiveButton("Tamam", DialogInterface.OnClickListener { dialog, which ->
+                                var intent = Intent(this@GameActivity, SectionActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            })
+                            builder.show()
 
-            bmp = Bitmap.createScaledBitmap(bmp!!, width, width, true)
-            var bitmaps = BitmapHelper.splitBitmap(bmp!!, row, count)
-            orderBitmapList = bitmaps.map { bitmapModel -> bitmapModel.id }.toIntArray()
+                        } else {
+                            bmp = ImageHelper.Base64ToBitmap(section!!.image)
+                        }
 
-            var e = arrayListOf<BitmapModel>()
-            var suffleArr = bitmaps.shuffled()
-            e.addAll(suffleArr)
-            bitmapList = e
+                        bmp = Bitmap.createScaledBitmap(bmp!!, width, width, true)
+                        var bitmaps = BitmapHelper.splitBitmap(bmp!!, row, count)
+                        orderBitmapList = bitmaps.map { bitmapModel -> bitmapModel.id }.toIntArray()
 
-            var adapters = BitmapRecyclerAdapters(this, bitmapList!!, row, count, this)
-            var gridLayoutManager = GridLayoutManager(this, row, LinearLayoutManager.VERTICAL, false)
+                        var e = arrayListOf<BitmapModel>()
+                        var suffleArr = bitmaps.shuffled()
+                        e.addAll(suffleArr)
+                        bitmapList = e
 
-            grd_GameRecylerView.layoutManager = gridLayoutManager
-            grd_GameRecylerView.adapter = adapters
+                        var adapters = BitmapRecyclerAdapters(this@GameActivity, bitmapList!!, row, count, this@GameActivity)
+                        var gridLayoutManager = GridLayoutManager(this@GameActivity, row, LinearLayoutManager.VERTICAL, false)
 
-            touchHelper = ItemTouchHelper(simpleCallback)
-            touchHelper.attachToRecyclerView(grd_GameRecylerView)
+                        grd_GameRecylerView.layoutManager = gridLayoutManager
+                        grd_GameRecylerView.adapter = adapters
 
-            textToSpeech = TextToSpeech(this@GameActivity, object : TextToSpeech.OnInitListener {
-                override fun onInit(status: Int) {
-                    if (status != TextToSpeech.ERROR) {
-                        textToSpeech.setLanguage(Locale("tr", "TR"))
+                        touchHelper = ItemTouchHelper(simpleCallback)
+                        touchHelper.attachToRecyclerView(grd_GameRecylerView)
+
+                        textToSpeech = TextToSpeech(this@GameActivity, object : TextToSpeech.OnInitListener {
+                            override fun onInit(status: Int) {
+                                if (status != TextToSpeech.ERROR) {
+                                    textToSpeech.setLanguage(Locale("tr", "TR"))
+                                }
+                            }
+                        })
+
+                        //#region ImagePreviwer
+                        var previewView = layoutInflater.inflate(R.layout.activity_game_preview_image, null)
+                        var previewImage = previewView.findViewById<ImageView>(R.id.img_review)
+                        var nextbutton = previewView.findViewById<Button>(R.id.btn_previewNext)
+                        var backButton = previewView.findViewById<Button>(R.id.btn_previewBack)
+                        var txt_previewTr = previewView.findViewById<TextView>(R.id.txt_previewTextTr)
+                        var txt_previewEn = previewView.findViewById<TextView>(R.id.txt_previewTextEn)
+                        previewImage.setImageBitmap(bmp)
+                        txt_previewTr.setText(section!!.textTr.capitalize())
+                        txt_previewEn.setText(section!!.textEn.capitalize())
+                        var preview = AlertDialog.Builder(this@GameActivity).setView(previewView).setTitle("Ön izleme").create()
+                        myCountDownTimer = MyCountDownTimer(10000, 1000, preview)
+                        preview.setCancelable(false)
+                        preview.window!!.attributes.windowAnimations = R.style.DialogSlide
+                        backButton.setOnClickListener {
+                            myCountDownTimer.onFinish()
+                            onBackPressed()
+                            finish()
+                        }
+                        nextbutton.setOnClickListener {
+                            myCountDownTimer.onFinish()
+                            preview.dismiss()
+                        }
+                        preview.setOnShowListener { dialog: DialogInterface? ->
+                            myCountDownTimer.start()
+                        }
+
+                        if (section!!.knowedTr) {
+                            btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
+                        }
+                        if (section!!.knowedEn) {
+                            btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
+                        }
+                        if (section!!.completed) {
+                            var confirmDialog = AlertDialog.Builder(this@GameActivity).setTitle("Dikkat!").setMessage("Bölümü tekrarlamak istiyormusunuz?")
+                            confirmDialog.setPositiveButton("Tekrar Oyna") { dialog, which ->
+                                if (resetSection()) {
+                                    btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
+                                    btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
+                                    preview.show()
+                                }
+                            }
+                            confirmDialog.setNegativeButton("Geri") { dialog, which ->
+                                onBackPressed()
+                                finish()
+                            }
+                            confirmDialog.setCancelable(false)
+                            confirmDialog.show()
+                        } else {
+                            preview.show()
+                        }
+                        //#endregion
                     }
+
+                    var listenerDialogView = LayoutInflater.from(this@GameActivity).inflate(R.layout.activity_game_microphone_dialog, null)
+                    var btn_speechOk = listenerDialogView.findViewById<Button>(R.id.btn_okSpeech)
+                    var btn_speechCancel = listenerDialogView.findViewById<Button>(R.id.btn_cancelSpeech)
+                    var txt_readedText = listenerDialogView.findViewById<TextView>(R.id.txt_readedText)
+
+                    var alertDialogBuilder = AlertDialog.Builder(this@GameActivity).setView(listenerDialogView).setTitle("Lütfen mikrofon tuşuna basarak konuşun").setIcon(R.drawable.ic_mic_black_24dp)
+                    alertDialogBuilder.setCancelable(false)
+
+                    var listenerDialog = alertDialogBuilder.create()
+
+                    if (!section!!.textTr.isEmpty()) {
+                        txt_text_tr.text = section!!.textTr.capitalize()
+                        btn_textToSpeachTr.setOnClickListener {
+                            textToSpeech.setLanguage(Locale("tr", "TR"))
+                            textToSpeech.speak(section!!.textTr, TextToSpeech.QUEUE_FLUSH, null)
+                        }
+
+                        btn_speachToTextTr.setOnClickListener { v ->
+                            listenerDialog.show()
+                            startRecognize(listenerDialogView, RECOGNIZE_LANGUAGES.TR)
+                            btn_speechOk.setOnClickListener {
+                                var readedText = txt_readedText.text
+
+                                if (!readedText.toString().toLowerCase().equals(section!!.textTr.toLowerCase())) {
+                                    Toast.makeText(this@GameActivity, "Söylediğiniz kelimeler eşleşmiyor. Lütfen tekrar deneyiniz.", Toast.LENGTH_LONG).show()
+                                    btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
+                                } else {
+                                    listenerDialog.dismiss()
+                                    section!!.knowedTr = true
+                                    if (checkFinishedControl()) {
+                                        showComplatedDialog()
+                                    }
+                                    btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
+                                    txt_readedText.text = ""
+                                }
+                            }
+                            btn_speechCancel.setOnClickListener {
+                                listenerDialog.dismiss()
+                            }
+
+                        }
+                    }
+                    if (!section!!.textEn.isEmpty()) {
+                        txt_text_en.text = section!!.textEn.capitalize()
+                        btn_textToSpeachEn.setOnClickListener {
+                            textToSpeech.setLanguage(Locale.ENGLISH)
+                            textToSpeech.speak(section!!.textEn, TextToSpeech.QUEUE_FLUSH, null)
+                        }
+
+                        btn_speachToTextEn.setOnClickListener { v ->
+                            if (allPermissionsGranted()) {
+                                listenerDialog.show()
+                                startRecognize(listenerDialogView, RECOGNIZE_LANGUAGES.EN)
+                                btn_speechOk.setOnClickListener {
+                                    var readedText = txt_readedText.text
+                                    if (!readedText.toString().toLowerCase().equals(section!!.textEn.toLowerCase())) {
+                                        Toast.makeText(this@GameActivity, "Söylediğiniz kelimeler eşleşmiyor. Lütfen tekrar deneyiniz.", Toast.LENGTH_LONG).show()
+                                        btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
+                                    } else {
+                                        listenerDialog.dismiss()
+                                        btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
+                                        section!!.knowedEn = true
+                                        if (checkFinishedControl()) {
+                                            showComplatedDialog()
+                                        }
+                                        txt_readedText.text = ""
+                                    }
+                                }
+                                btn_speechCancel.setOnClickListener {
+                                    listenerDialog.dismiss()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                override fun onCancelled(p0: DatabaseError) {
+                    TODO("Not yet implemented")
                 }
             })
+            //section = _dataAdapterService.getSection(currentSectionId.toString())
 
-            //#region ImagePreviwer
-            var previewView = layoutInflater.inflate(R.layout.activity_game_preview_image, null)
-            var previewImage = previewView.findViewById<ImageView>(R.id.img_review)
-            var nextbutton = previewView.findViewById<Button>(R.id.btn_previewNext)
-            var backButton = previewView.findViewById<Button>(R.id.btn_previewBack)
-            var txt_previewTr = previewView.findViewById<TextView>(R.id.txt_previewTextTr)
-            var txt_previewEn = previewView.findViewById<TextView>(R.id.txt_previewTextEn)
-            previewImage.setImageBitmap(bmp)
-            txt_previewTr.setText(section!!.textTr.capitalize())
-            txt_previewEn.setText(section!!.textEn.capitalize())
-            var preview = AlertDialog.Builder(this@GameActivity).setView(previewView).setTitle("Ön izleme").create()
-            myCountDownTimer = MyCountDownTimer(10000, 1000, preview)
-            preview.setCancelable(false)
-            preview.window!!.attributes.windowAnimations = R.style.DialogSlide
-            backButton.setOnClickListener {
-                myCountDownTimer.onFinish()
-                onBackPressed()
-                finish()
-            }
-            nextbutton.setOnClickListener {
-                myCountDownTimer.onFinish()
-                preview.dismiss()
-            }
-            preview.setOnShowListener { dialog: DialogInterface? ->
-                myCountDownTimer.start()
-            }
-
-            if (section!!.isKnowedTr) {
-                btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
-            }
-            if (section!!.isKnowedEn) {
-                btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
-            }
-            if (section!!.isCompleted) {
-                var confirmDialog = AlertDialog.Builder(this).setTitle("Dikkat!").setMessage("Bölümü tekrarlamak istiyormusunuz?")
-                confirmDialog.setPositiveButton("Tekrar Oyna") { dialog, which ->
-                    if (resetSection()) {
-                        btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
-                        btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
-                        preview.show()
-                    }
-                }
-                confirmDialog.setNegativeButton("Geri") { dialog, which ->
-                    onBackPressed()
-                    finish()
-                }
-                confirmDialog.setCancelable(false)
-                confirmDialog.show()
-            } else {
-                preview.show()
-            }
-            //#endregion
-
-            var listenerDialogView = LayoutInflater.from(this@GameActivity).inflate(R.layout.activity_game_microphone_dialog, null)
-            var btn_speechOk = listenerDialogView.findViewById<Button>(R.id.btn_okSpeech)
-            var btn_speechCancel = listenerDialogView.findViewById<Button>(R.id.btn_cancelSpeech)
-            var txt_readedText = listenerDialogView.findViewById<TextView>(R.id.txt_readedText)
-
-            var alertDialogBuilder = AlertDialog.Builder(this@GameActivity).setView(listenerDialogView).setTitle("Lütfen mikrofon tuşuna basarak konuşun").setIcon(R.drawable.ic_mic_black_24dp)
-            alertDialogBuilder.setCancelable(false)
-
-            var listenerDialog = alertDialogBuilder.create()
-
-            if (!section!!.textTr.isEmpty()) {
-                txt_text_tr.text = section!!.textTr.capitalize()
-                btn_textToSpeachTr.setOnClickListener {
-                    textToSpeech.setLanguage(Locale("tr", "TR"))
-                    textToSpeech.speak(section!!.textTr, TextToSpeech.QUEUE_FLUSH, null)
-                }
-
-                btn_speachToTextTr.setOnClickListener { v ->
-                    listenerDialog.show()
-                    startRecognize(listenerDialogView, RECOGNIZE_LANGUAGES.TR)
-                    btn_speechOk.setOnClickListener {
-                        var readedText = txt_readedText.text
-
-                        if (!readedText.toString().toLowerCase().equals(section!!.textTr.toLowerCase())) {
-                            Toast.makeText(this@GameActivity, "Söylediğiniz kelimeler eşleşmiyor. Lütfen tekrar deneyiniz.", Toast.LENGTH_LONG).show()
-                            btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
-                        } else {
-                            listenerDialog.dismiss()
-                            section!!.isKnowedTr = true
-                            if (checkFinishedControl()) {
-                                showComplatedDialog()
-                            }
-                            btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
-                            txt_readedText.text = ""
-                        }
-                    }
-                    btn_speechCancel.setOnClickListener {
-                        listenerDialog.dismiss()
-                    }
-
-                }
-            }
-            if (!section!!.textEn.isEmpty()) {
-                txt_text_en.text = section!!.textEn.capitalize()
-                btn_textToSpeachEn.setOnClickListener {
-                    textToSpeech.setLanguage(Locale.ENGLISH)
-                    textToSpeech.speak(section!!.textEn, TextToSpeech.QUEUE_FLUSH, null)
-                }
-
-                btn_speachToTextEn.setOnClickListener { v ->
-                    if (allPermissionsGranted()) {
-                        listenerDialog.show()
-                        startRecognize(listenerDialogView, RECOGNIZE_LANGUAGES.EN)
-                        btn_speechOk.setOnClickListener {
-                            var readedText = txt_readedText.text
-                            if (!readedText.toString().toLowerCase().equals(section!!.textEn.toLowerCase())) {
-                                Toast.makeText(this@GameActivity, "Söylediğiniz kelimeler eşleşmiyor. Lütfen tekrar deneyiniz.", Toast.LENGTH_LONG).show()
-                                btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
-                            } else {
-                                listenerDialog.dismiss()
-                                btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorGreen)
-                                section!!.isKnowedEn = true
-                                if (checkFinishedControl()) {
-                                    showComplatedDialog()
-                                }
-                                txt_readedText.text = ""
-                            }
-                        }
-                        btn_speechCancel.setOnClickListener {
-                            listenerDialog.dismiss()
-                        }
-                    }
-                }
-            }
         } catch (ex: ExceptionInInitializerError) {
             Toast.makeText(this, ex.localizedMessage, Toast.LENGTH_LONG).show()
         }
@@ -302,10 +325,10 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
 
     }
 
-
     override fun onBackPressed() {
-        super.onBackPressed()
         finish()
+        super.onBackPressed()
+
     }
 
     override fun onPause() {
@@ -338,28 +361,34 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
     }
 
     fun checkFinishedControl(): Boolean {
-        if (section!!.isKnowedTr && section!!.isKnowedEn) {
-            section!!.isCompleted = true
-            if (_dataAdapterService.updateSection(section!!.id, section!!)) {
-                return true
-            } else {
-                return false
-            }
+        if (section!!.knowedTr && section!!.knowedEn) {
+            section!!.completed = true
+            var childUpdates = HashMap<String, Boolean>()
+            childUpdates["completed"] = true
+            childUpdates["knowedTr"] = true
+            childUpdates["knowedEn"] = true
+            dbRef.child(section!!.id).updateChildren(childUpdates as Map<String, Any>)
+            return true
         } else {
             return false
         }
     }
 
     fun resetSection(): Boolean {
-        section!!.isCompleted = false
-        section!!.isPuzzleCompleted = false
-        section!!.isKnowedEn = false
-        section!!.isKnowedTr = false
-        if (_dataAdapterService.updateSection(section!!.id, section!!)) {
-            return true
-        } else {
-            return false
-        }
+        section!!.completed = false
+        section!!.puzzleCompleted = false
+        section!!.knowedEn = false
+        section!!.knowedTr = false
+
+        var childUpdates = HashMap<String, Boolean>()
+        childUpdates["completed"] = false
+        childUpdates["knowedTr"] = false
+        childUpdates["knowedEn"] = false
+        childUpdates["puzzleCompleted"] = false
+
+        dbRef.child(section!!.id).updateChildren(childUpdates as Map<String, Any>)
+        isFirstLoad = true
+        return true
     }
 
     fun showComplatedDialog() {
@@ -367,7 +396,7 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         var complatedDialogBuilder = AlertDialog.Builder(this@GameActivity).setView(complatedDialogView).create()
         var nextLevelBtn = complatedDialogView.findViewById<Button>(R.id.btn_nextLevel)
         nextLevelBtn.setOnClickListener {
-            var nextlevel = _dataAdapterService.nextLevel(section!!.id)
+            var nextlevel = _dataAdapterService.nextLevel(section!!.id)//
             if (nextlevel != null) {
                 var intent = Intent(this@GameActivity, GameActivity::class.java)
                 intent.putExtra(Constants.SECTION_ID, nextlevel!!.id)
@@ -379,6 +408,7 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
                 startActivity(intent)
                 finish()
             }
+            return@setOnClickListener
         }
         complatedDialogBuilder.show()
 
@@ -457,8 +487,12 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
                 stepCount++
                 txtStepCounter.text = stepCount.toString()
                 if (checkFinishControl()) {
-                    section!!.isPuzzleCompleted = true
-                    _dataAdapterService.updateSection(section!!.id, section!!)
+                    var childUpdates = HashMap<String, Boolean>()
+                    childUpdates["puzzleCompleted"] = true
+                    var newRef = dbRef.child(section!!.id)
+                    newRef.updateChildren(childUpdates as Map<String, Any>)
+                    section!!.puzzleCompleted = true
+                    //_dataAdapterService.updateSection(section!!.id, section!!)//
                     var dialog = AlertDialog.Builder(this@GameActivity)
                     dialog.setTitle("Puzzle Oyunu")
                     dialog.setMessage("Tebrikler! puzzle'ı tamamladınız. Şimdi sıra 2. adımda lütfen aşağıdaki kelimeleri türkçe ve inglizce olarak seslendirin.")
@@ -491,7 +525,6 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         } else return false
     }
 
-
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
@@ -514,7 +547,8 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         }
 
         override fun onFinish() {
-            alertDialog.dismiss()
+            if (alertDialog.isShowing)
+                alertDialog.dismiss()
             super.cancel()
         }
 
@@ -527,7 +561,6 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         }
 
     }
-
 }
 
 

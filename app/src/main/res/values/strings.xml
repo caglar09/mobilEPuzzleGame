@@ -23,4 +23,16 @@
     <string name="whocontributed">
         Çağlar YILDIRIM\nRamazan TORI\nEda ILDIR
     </string>
+
+    <string name="facebook">
+        Facebook ile oturum aç
+    </string>
+
+    <string name="google">
+        Google ile oturum aç
+    </string>
+
+    <string name="emailAuth">
+        Eposta ile oturum aç
+    </string>
 </resources>

@@ -1,26 +1,27 @@
 package com.mob.cameraxxx
 
 import android.annotation.SuppressLint
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.media.ExifInterface
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Base64
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ml.common.modeldownload.FirebaseModelDownloadConditions
 import com.google.firebase.ml.naturallanguage.FirebaseNaturalLanguage
 import com.google.firebase.ml.naturallanguage.translate.FirebaseTranslateLanguage
@@ -31,11 +32,11 @@ import com.mob.cameraxxx.helpers.ImageHelper
 import com.mob.cameraxxx.service.DataAdapterService
 import java.io.File
 import java.lang.Exception
-import java.util.*
 
 
 class ImageActivity : AppCompatActivity() {
-
+    private var mAuth:FirebaseAuth=FirebaseAuth.getInstance()
+    private var databaseRef:DatabaseReference= FirebaseDatabase.getInstance().getReference("users").child(mAuth.uid!!.toString())
     private var imgView: ImageView? = null
     private lateinit var takedImage: Bitmap
     private var btn_rotate_image: FloatingActionButton? = null
@@ -100,15 +101,32 @@ class ImageActivity : AppCompatActivity() {
                         var base64Image = ImageHelper.BitMapToBase64(takedImage)
                         var trText = txt_tr.text.toString()
                         var enText = txt_en.text.toString()
-                        var sec = Section(Date().time, 0, base64Image, trText, enText, false, false, false, false)
-                        var result = dataAdapterService.saveSection(sec)
+                        var key=databaseRef.child("sections").push().key
+                        var newSection = Section(key.toString(), 0, base64Image, trText, enText, false, false, false, false)
+                        databaseRef.child("sections").child(key!!).setValue(newSection).addOnCompleteListener(this, OnCompleteListener {
+                            task ->
+                            try {
+                                if (task.isSuccessful){
+                                    Toast.makeText(this, "Kayıt işlemi başarılı", Toast.LENGTH_LONG).show()
+                                    startActivity(Intent(this, GameActivity::class.java).putExtra(Constants.SECTION_ID, key!!))
+                                    finish()
+                                }
+                                else {
+                                    Toast.makeText(this, "Kayıt işlemi başarısız", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                            catch (ex:Exception){
+                                Toast.makeText(this@ImageActivity,ex.localizedMessage,Toast.LENGTH_LONG).show()
+                            }
+                        })
+                       /* var result = dataAdapterService.saveSection(sec)
                         if (result) {
                             var savedSection = dataAdapterService.getSection(sec.id)
                             startActivity(Intent(this, GameActivity::class.java).putExtra(Constants.SECTION_ID, savedSection!!.id))
                             Toast.makeText(this, "Kayıt işlemi başarılı", Toast.LENGTH_LONG).show()
                             finish()
                         } else
-                            Toast.makeText(this, "Hata oluştu", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Hata oluştu", Toast.LENGTH_LONG).show()*/
                     } else {
                         Toast.makeText(this, "Lütfen bütün alanları doldurun", Toast.LENGTH_LONG).show()
                     }
@@ -141,7 +159,7 @@ class ImageActivity : AppCompatActivity() {
         }
     }
 
-    fun textChangeValidation(layout: TextInputLayout) = object : TextWatcher {
+        fun textChangeValidation(layout: TextInputLayout) = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {
             try {
                 if (s!!.length > 0) {

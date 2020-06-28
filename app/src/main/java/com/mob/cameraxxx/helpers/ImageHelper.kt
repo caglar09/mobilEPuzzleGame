@@ -6,7 +6,6 @@ import android.graphics.Matrix
 import android.util.Base64
 import androidx.camera.core.ImageProxy
 import androidx.exifinterface.media.ExifInterface
-import com.mob.cameraxxx.R
 import java.io.ByteArrayOutputStream
 
 class ImageHelper {
