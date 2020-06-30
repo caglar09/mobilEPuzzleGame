@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -218,11 +219,12 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
                         if (section!!.completed) {
                             var confirmDialog = AlertDialog.Builder(this@GameActivity).setTitle("Dikkat!").setMessage("Bölümü tekrarlamak istiyormusunuz?")
                             confirmDialog.setPositiveButton("Tekrar Oyna") { dialog, which ->
-                                if (resetSection()) {
+                                resetSection()
+                                /*if (resetSection()) {
                                     btn_checkSpeechTr!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
                                     btn_checkSpeechEn!!.backgroundTintList = resources.getColorStateList(R.color.colorDanger)
                                     preview.show()
-                                }
+                                }*/
                             }
                             confirmDialog.setNegativeButton("Geri") { dialog, which ->
                                 onBackPressed()
@@ -374,7 +376,7 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         }
     }
 
-    fun resetSection(): Boolean {
+    fun resetSection() {
         section!!.completed = false
         section!!.puzzleCompleted = false
         section!!.knowedEn = false
@@ -386,9 +388,16 @@ class GameActivity : AppCompatActivity(), StartDragListener, ToolTipsManager.Tip
         childUpdates["knowedEn"] = false
         childUpdates["puzzleCompleted"] = false
 
-        dbRef.child(section!!.id).updateChildren(childUpdates as Map<String, Any>)
-        isFirstLoad = true
-        return true
+        dbRef.child(section!!.id).updateChildren(childUpdates as Map<String, Any>).addOnCompleteListener(this, OnCompleteListener {
+            if (it.isSuccessful) {
+                var renewIntent = Intent(this@GameActivity, GameActivity::class.java)
+                renewIntent.putExtra(Constants.SECTION_ID, section!!.id)
+                startActivity(renewIntent)
+                finish()
+            }
+        })
+
+        //return true
     }
 
     fun showComplatedDialog() {

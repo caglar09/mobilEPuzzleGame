@@ -209,7 +209,7 @@ class AccountActivity : AppCompatActivity() {
     }
 
     //çalışmıyor
-    fun sendMail(to: String, text: String) {
+    /*fun sendMail(to: String, text: String) {
        try {
            MaildroidX.Builder()
                    .smtp("smtp.gmail.com")
@@ -239,5 +239,5 @@ class AccountActivity : AppCompatActivity() {
            Log.e("MailERROR2",ex.localizedMessage)
            Toast.makeText(this@AccountActivity,ex.localizedMessage,Toast.LENGTH_LONG).show()
        }
-    }
+    }*/
 }
